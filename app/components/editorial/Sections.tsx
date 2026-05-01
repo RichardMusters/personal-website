@@ -317,7 +317,9 @@ export function EdContact() {
         </a>
 
         <a
-          href="#"
+          href="https://www.linkedin.com/in/richard-musters/"
+          target="_blank"
+          rel="noreferrer"
           style={{
             padding: "16px 22px",
             borderRadius: 999,
@@ -332,6 +334,27 @@ export function EdContact() {
           }}
         >
           LinkedIn
+          <span style={{ ...editorialStyles.mono, opacity: 0.6 }}>&rarr;</span>
+        </a>
+
+        <a
+          href="https://www.instagram.com/richardmusters/"
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            padding: "16px 22px",
+            borderRadius: 999,
+            background: "transparent",
+            color: "var(--ink)",
+            border: "1px solid var(--ink)",
+            fontSize: 14,
+            textDecoration: "none",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 10,
+          }}
+        >
+          Instagram
           <span style={{ ...editorialStyles.mono, opacity: 0.6 }}>&rarr;</span>
         </a>
       </div>
