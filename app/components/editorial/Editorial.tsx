@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import styles from "./Editorial.module.css";
 import { lightTokens, darkTokens, editorialStyles } from "./tokens";
 import RotterdamSkyline from "./RotterdamSkyline";
 import Erasmusbrug from "./Erasmusbrug";
@@ -34,7 +35,11 @@ export default function Editorial() {
   const tokens = (dark ? darkTokens : lightTokens) as CSSProperties;
 
   return (
-    <div ref={scrollRef} style={{ ...tokens, ...editorialStyles.page } as CSSProperties}>
+    <div
+      ref={scrollRef}
+      className={styles.root}
+      style={{ ...tokens, ...editorialStyles.page } as CSSProperties}
+    >
       {/* Sticky wrapper keeps the toggle pinned top-left of the viewport */}
       <div style={{ position: "sticky", top: 0, height: 0, zIndex: 50 }}>
         <DarkToggle dark={dark} onToggle={() => setDark(!dark)} />
@@ -43,10 +48,13 @@ export default function Editorial() {
       {/* Skyline + bridge live in a fixed-viewport sticky overlay so they
           stay anchored as the user scrolls the page. */}
       <div style={{ position: "sticky", top: 0, height: 0, zIndex: 1, pointerEvents: "none" }}>
-        <div style={{
-          position: "absolute", top: 0, left: 0, right: 0,
-          height: "100vh", pointerEvents: "none", overflow: "hidden",
-        }}>
+        <div
+          className={styles.backgroundViewport}
+          style={{
+            position: "absolute", top: 0, left: 0, right: 0,
+            pointerEvents: "none", overflow: "hidden",
+          }}
+        >
           <RotterdamSkyline progress={progress} />
           <Erasmusbrug progress={progress} />
         </div>
