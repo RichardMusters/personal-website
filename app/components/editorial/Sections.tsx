@@ -17,7 +17,6 @@ export function EdNav() {
       <nav className={styles.navLinks}>
         <a style={navLink} href="#about">Over</a>
         <a style={navLink} href="#work">Werk</a>
-        <a style={navLink} href="#writing">Schrijfsels</a>
         <a style={navLink} href="#contact">Contact</a>
       </nav>
 
@@ -198,7 +197,7 @@ export function EdAbout() {
 
       <div className={styles.aboutGrid}>
         <div>
-          <h2 className={styles.aboutTitle} style={editorialStyles.serif}>
+          <h2 id="work" className={styles.aboutTitle} style={editorialStyles.serif}>
             Het werk achter
             <br />
             <em style={{ fontStyle: "italic", color: "var(--mint-deep)" }}>de stilte.</em>
