@@ -380,6 +380,7 @@
   }
 
   .nav {
+    padding-top: 64px;
     gap: 16px;
   }
 
@@ -437,7 +438,7 @@
 
   .toggleButton {
     left: 16px;
-    top: 16px;
+    top: 12px;
   }
 
   .backgroundViewport {
