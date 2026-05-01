@@ -207,22 +207,31 @@ export function EdAbout() {
         <div className={styles.aboutBody}>
           <p style={{ margin: "0 0 22px" }}>
             <span className={styles.dropcap} style={editorialStyles.serif}>R</span>
-            ichard leidt sinds 2021 de IT-afdeling van Harmony Verzekeringen.
-            Een team van acht. Een jaarbudget van 2,3 miljoen. Een infrastructuur
-            die elke dag zonder ophef moet draaien - want bij een verzekeraar
-            zijn de werkdagen van anderen het product.
+            ichard is mijn naam.
+            Rotterdammer, en overdag te vinden als IT Manager bij Harmony Service Center. 
+            Daar houd ik me bezig met alles waar een stekker aan zit — problemen oplossen, 
+            collega's helpen, nieuwe technologie uitproberen en processen slimmer maken. 
+            Zeg maar de man die je belt als "het doet het niet" en die niet rust tot het wél doet.
           </p>
           <p style={{ margin: "0 0 22px" }}>
-            Daarvoor: implementatiespecialist, IT-consultant in het MKB, en
-            ooit begonnen tussen camera&apos;s en kassasystemen bij Foto Klein.
-            Een loopbaan opgebouwd van onderaf - en dat hoor je terug in
-            zijn aanpak. Strategie zonder stoffigheid.
+            Buiten werktijd vind je me ofwel achter de PS5 (waar ik mezelf wijs maak dat ik nog 
+            steeds goed ben in FC26 en Fortnite), ofwel achter de kamado. Mijn zalm en picanha 
+            zijn legendarisch — althans, dat zeg ik zelf en niemand heeft me tot nu toe 
+            tegengesproken. Uitnodigingen voor een BBQ kun je richten via contact mogelijkheden hieronder.
           </p>
           <p style={{ margin: 0 }}>
-            Hij gelooft dat betrouwbare infrastructuur geen kostenpost is,
-            maar concurrentievoordeel. Dat goede beveiliging onzichtbaar is.
-            En dat de meest waardevolle IT-beslissingen zelden over technologie gaan.
+            Dan nog mijn guilty pleasure: Alfa Romeo. De Giulietta 1.4 met dubbele turbo om precies
+             te zijn. Ja, ik weet dat het Italiaans is en dat daar een reputatie bij hoort. Nee, 
+             dat maakt me niet uit. Schoonheid vraagt nu eenmaal om onderhoud.
           </p>
+           <p style={{ margin: 0 }}>
+            Verder ben ik een gezelschapsmens. Geef me een groep mensen, goed eten en een gesprek 
+            over tech of auto's en ik ben happy. Ik woon samen met mijn partner in Rotterdam, de 
+            mooiste rot stad die er is — niet onderhandelbaar.
+          </p>
+
+
+
         </div>
       </div>
     </section>
