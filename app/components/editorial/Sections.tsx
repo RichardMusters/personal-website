@@ -299,7 +299,7 @@ export function EdContact() {
 
       <div className={styles.contactActions}>
         <a
-          href="mailto:rmusters@harmony.nl"
+          href="mailto:rmusters1985@gmail.com"
           style={{
             padding: "16px 22px",
             borderRadius: 999,
