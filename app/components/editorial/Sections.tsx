@@ -293,8 +293,8 @@ export function EdContact() {
       </h2>
 
       <p className={styles.contactIntro}>
-        Open voor gesprekken over IT-strategie, digitale transformatie en
-        leiderschap binnen de Nederlandse verzekerings- en techsector.
+        Open voor gesprekken over IT, AI, Fabric Nederlandse verzekeringssector.
+        Of over Alfa Romeo, de beste BBQ-recepten, of gewoon een goed glas whiskey. Stuur een mailtje, of vind me op LinkedIn of Instagram.
       </p>
 
       <div className={styles.contactActions}>
