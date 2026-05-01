@@ -219,7 +219,7 @@ export function EdAbout() {
             zijn legendarisch — althans, dat zeg ik zelf en niemand heeft me tot nu toe 
             tegengesproken. Uitnodigingen voor een BBQ kun je richten via contact mogelijkheden hieronder.
           </p>
-          <p style={{ margin: 0 }}>
+          <p style={{ margin: "0 0 22px" }}>
             Dan nog mijn guilty pleasure: Alfa Romeo. De Giulietta 1.4 met dubbele turbo om precies
              te zijn. Ja, ik weet dat het Italiaans is en dat daar een reputatie bij hoort. Nee, 
              dat maakt me niet uit. Schoonheid vraagt nu eenmaal om onderhoud.
