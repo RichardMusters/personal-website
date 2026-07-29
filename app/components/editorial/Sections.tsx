@@ -251,9 +251,9 @@ export function EdNumbers() {
             color: "#a8d8c8",
           }}
         >
-          De cijfers - kort
+          Hoofdstuk Vier - De cijfers
         </span>
-        <span style={{ ...editorialStyles.mono, fontSize: 11, color: "rgba(244,241,234,0.4)" }}>04</span>
+        <span style={{ ...editorialStyles.mono, fontSize: 11, color: "rgba(244,241,234,0.4)" }}>06</span>
       </div>
 
       <div className={styles.numbersGrid}>
@@ -285,7 +285,7 @@ export function EdContact() {
         >
           Hoofdstuk Vijf - Contact
         </span>
-        <span style={{ ...editorialStyles.mono, fontSize: 11, color: "var(--ink-3)" }}>05</span>
+        <span style={{ ...editorialStyles.mono, fontSize: 11, color: "var(--ink-3)" }}>07</span>
       </div>
 
       <h2 className={styles.contactTitle} style={editorialStyles.serif}>
