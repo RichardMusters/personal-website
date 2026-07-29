@@ -1,0 +1,13 @@
+
+> rich-website@0.1.0 dev
+> next dev --hostname 127.0.0.1 --port 3000
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://127.0.0.1:3000
+- Network:       http://127.0.0.1:3000
+✓ Ready in 611ms
+Creating turbopack project { dir: 'C:\\Projecten\\rich-website', testMode: true }
+
+ GET / 200 in 285ms (next.js: 148ms, application-code: 137ms)
+ GET / 200 in 112ms (next.js: 26ms, application-code: 86ms)
+ GET /icon?d447812f8f75c711 200 in 1308ms (next.js: 684ms, application-code: 624ms)
