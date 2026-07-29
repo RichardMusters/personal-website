@@ -13,7 +13,7 @@ const fraunces = Fraunces({
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" });
 
 export const metadata: Metadata = {
-  title: "Richard Musters — IT Manager",
+  title: "Richard Musters",
   description: "IT Manager bij Harmony Verzekeringen · Rotterdam",
 };
 

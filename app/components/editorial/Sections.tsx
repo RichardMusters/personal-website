@@ -70,15 +70,7 @@ export function EdHero() {
               marginBottom: 20,
             }}
           >
-            <span
-              style={{
-                display: "inline-block",
-                width: 24,
-                height: 1,
-                background: "var(--mint-deep)",
-              }}
-            />
-            IT Manager &middot; Alfist &middot; Levensgenieter
+            - IT Manager &middot; Alfist &middot; Levensgenieter -
           </div>
 
           <h1 className={styles.heroTitle} style={editorialStyles.serif}>
