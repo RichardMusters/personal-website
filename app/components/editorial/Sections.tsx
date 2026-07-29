@@ -17,6 +17,7 @@ export function EdNav() {
       <nav className={styles.navLinks}>
         <a style={navLink} href="#about">Over</a>
         <a style={navLink} href="#work">Werk</a>
+        <a style={navLink} href="#projects">Projecten</a>
         <a style={navLink} href="#contact">Contact</a>
       </nav>
 
