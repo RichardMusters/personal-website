@@ -7,7 +7,7 @@ import { lightTokens, darkTokens, editorialStyles } from "./tokens";
 import RotterdamSkyline from "./RotterdamSkyline";
 import Erasmusbrug from "./Erasmusbrug";
 import {
-  EdNav, EdHero, EdStrip, EdAbout, EdNumbers, EdContact, DarkToggle,
+  EdNav, EdHero, EdStrip, EdAbout, EdAiDev, EdProjects, EdNumbers, EdContact, DarkToggle,
 } from "./Sections";
 
 export default function Editorial() {
@@ -64,6 +64,8 @@ export default function Editorial() {
       <EdHero />
       <EdStrip />
       <EdAbout />
+      <EdAiDev />
+      <EdProjects />
       <EdNumbers />
       <EdContact />
     </div>
