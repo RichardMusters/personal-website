@@ -186,6 +186,64 @@
   color: var(--accent);
 }
 
+.projectsSection {
+  padding: clamp(64px, 8vw, 96px) clamp(20px, 4vw, 56px);
+  position: relative;
+  z-index: 2;
+}
+
+.projectsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.projectCard {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 22px;
+  background: var(--bg-sand-2);
+}
+
+.projectTag {
+  display: inline-block;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+}
+
+.projectTagWebsite {
+  background: var(--mint-tint);
+  color: var(--mint-deep);
+}
+
+.projectTagMcp {
+  background: var(--accent-tint);
+  color: var(--accent);
+}
+
+.projectTitle {
+  font-size: 1.25rem;
+  line-height: 1.15;
+  margin: 0 0 8px;
+}
+
+.projectDescription {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+  margin: 0 0 16px;
+}
+
+.projectStatus {
+  font-size: 11px;
+  color: var(--ink-3);
+  letter-spacing: 0.3px;
+}
+
 .numbersSection {
   padding: clamp(56px, 7vw, 64px) clamp(20px, 4vw, 56px);
   background: #1a2426;
@@ -320,6 +378,11 @@
     gap: 24px;
   }
 
+  .projectsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
   .numberCard {
     padding-right: 0;
   }
@@ -416,6 +479,11 @@
   .numbersGrid {
     grid-template-columns: 1fr;
     gap: 20px;
+  }
+
+  .projectsGrid {
+    grid-template-columns: 1fr;
+    gap: 14px;
   }
 
   .numberCard:nth-child(even) {

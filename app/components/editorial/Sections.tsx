@@ -276,6 +276,89 @@ export function EdAiDev() {
   );
 }
 
+type ProjectPreview = {
+  type: "website" | "mcp";
+  title: string;
+  description: string;
+  status: string;
+};
+
+const projectPreviews: ProjectPreview[] = [
+  {
+    type: "website",
+    title: "Project Alpha",
+    description: "Sneak preview van een nieuwe website — meer details volgen binnenkort.",
+    status: "In ontwikkeling",
+  },
+  {
+    type: "website",
+    title: "Project Beta",
+    description: "Een tweede website-project, nog in de steigers.",
+    status: "Sneak preview",
+  },
+  {
+    type: "mcp",
+    title: "tool-runner-mcp",
+    description: "MCP server voor het uitvoeren van taken vanuit een AI-assistent.",
+    status: "In ontwikkeling",
+  },
+  {
+    type: "mcp",
+    title: "notion-sync-mcp",
+    description: "MCP server die notities synchroniseert met een AI-workflow.",
+    status: "Beschikbaar",
+  },
+];
+
+export function EdProjects() {
+  return (
+    <section id="projects" className={styles.projectsSection}>
+      <div className={styles.sectionHeader} style={{ marginBottom: 56 }}>
+        <span
+          style={{
+            ...editorialStyles.mono,
+            fontSize: 11,
+            letterSpacing: 1.5,
+            textTransform: "uppercase",
+            color: "var(--ink-3)",
+          }}
+        >
+          Hoofdstuk Drie - Projecten
+        </span>
+        <span style={{ ...editorialStyles.mono, fontSize: 11, color: "var(--ink-3)" }}>05</span>
+      </div>
+
+      <h2 className={styles.aboutTitle} style={{ ...editorialStyles.serif, marginBottom: 40 }}>
+        Sneak previews
+        <br />
+        <em style={{ fontStyle: "italic", color: "var(--mint-deep)" }}>uit de werkplaats.</em>
+      </h2>
+
+      <div className={styles.projectsGrid}>
+        {projectPreviews.map((project) => (
+          <div key={project.title} className={styles.projectCard}>
+            <span
+              className={`${styles.projectTag} ${
+                project.type === "website" ? styles.projectTagWebsite : styles.projectTagMcp
+              }`}
+              style={editorialStyles.mono}
+            >
+              {project.type === "website" ? "Website" : "MCP"}
+            </span>
+            <h3 className={styles.projectTitle} style={editorialStyles.serif}>
+              {project.title}
+            </h3>
+            <p className={styles.projectDescription}>{project.description}</p>
+            <span className={styles.projectStatus} style={editorialStyles.mono}>
+              {project.status}
+            </span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export function EdNumbers() {
   const items = [
     { k: "12+", v: "jaar in de IT" },
