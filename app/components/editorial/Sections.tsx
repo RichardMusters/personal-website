@@ -231,6 +231,51 @@ export function EdAbout() {
   );
 }
 
+export function EdAiDev() {
+  return (
+    <section className={styles.aboutSection}>
+      <div className={styles.sectionHeader} style={{ marginBottom: 56 }}>
+        <span
+          style={{
+            ...editorialStyles.mono,
+            fontSize: 11,
+            letterSpacing: 1.5,
+            textTransform: "uppercase",
+            color: "var(--ink-3)",
+          }}
+        >
+          Hoofdstuk Twee - AI & Ontwikkeling
+        </span>
+        <span style={{ ...editorialStyles.mono, fontSize: 11, color: "var(--ink-3)" }}>04</span>
+      </div>
+
+      <div className={styles.aboutGrid}>
+        <div>
+          <h2 className={styles.aboutTitle} style={editorialStyles.serif}>
+            Leren door
+            <br />
+            <em style={{ fontStyle: "italic", color: "var(--mint-deep)" }}>te bouwen.</em>
+          </h2>
+        </div>
+
+        <div className={styles.aboutBody}>
+          <p style={{ margin: "0 0 22px" }}>
+            <span className={styles.dropcap} style={editorialStyles.serif}>I</span>
+            k verdiep me steeds meer in wat AI kan betekenen voor mijn werk en mijn eigen
+            ontwikkeling. Niet alleen lezen erover, maar het zelf uitproberen en bouwen &mdash;
+            stap voor stap, project voor project.
+          </p>
+          <p style={{ margin: 0 }}>
+            Deze website is daar zelf een voorbeeld van: ontworpen en gebouwd samen met AI. Het is
+            een doorlopend proces van proberen, vastlopen en weer verder &mdash; en precies dat
+            proces deel ik hierna, in het volgende hoofdstuk.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export function EdNumbers() {
   const items = [
     { k: "12+", v: "jaar in de IT" },
