@@ -25,14 +25,8 @@ export default function Editorial() {
     const onScroll = () => {
       const isMobile = window.matchMedia("(max-width: 800px)").matches;
       const fullPageMax = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollTop =
-        window.scrollY ||
-        document.scrollingElement?.scrollTop ||
-        document.documentElement.scrollTop ||
-        document.body.scrollTop ||
-        0;
-      const max = isMobile ? window.innerHeight * 0.72 : fullPageMax;
-      const p = max > 0 ? scrollTop / max : 0;
+      const max = isMobile ? window.innerHeight * 1.6 : fullPageMax;
+      const p = max > 0 ? window.scrollY / max : 0;
       setProgress(Math.min(1, p));
     };
     window.addEventListener("scroll", onScroll, { passive: true });
