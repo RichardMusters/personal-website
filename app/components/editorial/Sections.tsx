@@ -1,5 +1,6 @@
 import styles from "./Editorial.module.css";
 import { editorialStyles, navLink } from "./tokens";
+import type { SkyColophon } from "./sky/useSkyState";
 
 export function EdNav() {
   return (
@@ -41,14 +42,7 @@ export function EdNav() {
   );
 }
 
-type HeroColophon = {
-  month: string;
-  weather: string | null;
-  water: string | null;
-  sun: string;
-};
-
-export function EdHero({ colophon }: { colophon: HeroColophon }) {
+export function EdHero({ colophon }: { colophon: SkyColophon }) {
   const leftParts = ["No. 01", "Rotterdam", "51.92N 4.48E", colophon.water].filter(
     (part): part is string => Boolean(part)
   );
