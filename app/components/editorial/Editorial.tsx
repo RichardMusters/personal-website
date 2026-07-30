@@ -19,7 +19,7 @@ const CLOCK_TICK_MS = 60_000;
 export default function Editorial() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [progress, setProgress] = useState(0);
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState(true);
   const [weather, setWeather] = useState<HeaderData | null>(null);
   const [now, setNow] = useState(() => new Date());
 
