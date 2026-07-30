@@ -278,7 +278,7 @@ export function EdAiDev() {
           <p style={{ margin: 0 }}>
             Deze website is daar zelf een voorbeeld van: ontworpen en gebouwd samen met AI. Het is
             een doorlopend proces van proberen, vastlopen en weer verder &mdash; en precies dat
-            proces deel ik hierna, in het volgende hoofdstuk.
+            proces deel ik hieronder.
           </p>
         </div>
       </div>
@@ -389,7 +389,7 @@ export function EdNumbers() {
             color: "#a8d8c8",
           }}
         >
-          Hoofdstuk Vier - De cijfers
+          - De cijfers
         </span>
         <span style={{ ...editorialStyles.mono, fontSize: 11, color: "rgba(244,241,234,0.4)" }}>06</span>
       </div>
