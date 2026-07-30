@@ -533,3 +533,59 @@
     height: 100vh;
   }
 }
+
+/* --- Levende skyline: ramen, kranen, neerslag ---------------------- */
+
+.skyWindow {
+  fill: var(--mint-deep);
+  fill-opacity: 0;
+  stroke: none;
+  transition: fill-opacity 900ms ease-out;
+}
+
+.skyWindowLit {
+  fill-opacity: 0.75;
+}
+
+.skyCraneJib {
+  transition: transform 2400ms cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.skyDrop {
+  stroke: var(--skyline-stroke);
+  stroke-width: 0.6;
+  opacity: 0.4;
+  animation: skyFall 1.4s linear infinite;
+}
+
+.skyFlake {
+  fill: var(--skyline-stroke);
+  opacity: 0.35;
+  animation: skyDrift 5s linear infinite;
+}
+
+.skyPrecipStorm .skyDrop {
+  animation-duration: 0.85s;
+  opacity: 0.55;
+}
+
+@keyframes skyFall {
+  from { transform: translateY(-14%); }
+  to   { transform: translateY(114%); }
+}
+
+@keyframes skyDrift {
+  from { transform: translate(0, -14%); }
+  to   { transform: translate(-6px, 114%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skyDrop,
+  .skyFlake {
+    animation: none;
+  }
+  .skyWindow,
+  .skyCraneJib {
+    transition: none;
+  }
+}
