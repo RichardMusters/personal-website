@@ -31,25 +31,33 @@ export default function Editorial() {
   // Track page scroll progress to drive the skyline → bridge crossfade
   useEffect(() => {
     const onScroll = () => {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const isMobile = window.matchMedia("(max-width: 800px)").matches;
+      const fullPageMax = document.documentElement.scrollHeight - window.innerHeight;
+      const max = isMobile ? window.innerHeight * 1.6 : fullPageMax;
       const p = max > 0 ? window.scrollY / max : 0;
-      setProgress(p);
+      setProgress(Math.min(1, p));
     };
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
     onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
   // Fetch the weather/water colophon data once, then refresh every 15 minutes.
   // Fails silently — the header stays on its astronomical (sun/moon-only) state.
   useEffect(() => {
     let cancelled = false;
+    let latestRequestId = 0;
     const load = async () => {
+      const requestId = ++latestRequestId;
       try {
         const res = await fetch("/api/header-data", { headers: { accept: "application/json" } });
-        if (!res.ok || cancelled) return;
+        if (!res.ok || cancelled || requestId !== latestRequestId) return;
         const json: HeaderData = await res.json();
-        if (!cancelled) setWeather(json);
+        if (!cancelled && requestId === latestRequestId) setWeather(json);
       } catch {
         // De header blijft staan op de astronomische stand.
       }
