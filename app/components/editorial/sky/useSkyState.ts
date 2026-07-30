@@ -108,16 +108,17 @@ export function useSkyState(weather: HeaderData | null, now: Date): SkyState {
 
     const month = new Intl.DateTimeFormat(LOCALE, { month: "long", year: "numeric" }).format(now);
 
-    const weatherText = weather
-      ? (() => {
-          const { label } = condition(weather.weatherCode);
-          const parts = [`${Math.round(weather.temperature ?? 0)}°`, label];
-          const dirLabel = compass(weather.windDirection);
-          const bft = beaufort(weather.windSpeed);
-          if (dirLabel && bft !== null) parts.push(bft === 0 ? "windstil" : `wind ${dirLabel} ${bft}`);
-          return parts.join(" · ");
-        })()
-      : null;
+    const weatherText =
+      weather && Number.isFinite(weather.temperature)
+        ? (() => {
+            const { label } = condition(weather.weatherCode);
+            const parts = [`${Math.round(weather.temperature as number)}°`, label];
+            const dirLabel = compass(weather.windDirection);
+            const bft = beaufort(weather.windSpeed);
+            if (dirLabel && bft !== null) parts.push(bft === 0 ? "windstil" : `wind ${dirLabel} ${bft}`);
+            return parts.join(" · ");
+          })()
+        : null;
 
     const water = Number.isFinite(weather?.waterLevel)
       ? formatWaterLevel(weather?.waterLevel as number)
