@@ -429,7 +429,7 @@
   }
 
   .backgroundViewport {
-    height: 78vh;
+    height: 100vh;
   }
 
   .contactAmpersand {
@@ -454,6 +454,26 @@
   .navLinks {
     justify-content: flex-start;
     font-size: 12px;
+  }
+
+  .navCta {
+    width: auto;
+    min-width: 0;
+    max-width: none;
+    padding: 7px 11px !important;
+    background: var(--bg-sand-2) !important;
+    color: var(--ink-2) !important;
+    border: 1px solid var(--line);
+    box-shadow: none;
+    font-size: 0 !important;
+    letter-spacing: 0 !important;
+  }
+
+  .navCta::before {
+    content: "Mail";
+    font-size: 11px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
   }
 
   .heroMeta span:last-child,
@@ -510,6 +530,6 @@
   }
 
   .backgroundViewport {
-    height: 65vh;
+    height: 100vh;
   }
 }

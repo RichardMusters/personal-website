@@ -23,13 +23,19 @@ export default function Editorial() {
   // Track page scroll progress to drive the skyline → bridge crossfade
   useEffect(() => {
     const onScroll = () => {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const isMobile = window.matchMedia("(max-width: 800px)").matches;
+      const fullPageMax = document.documentElement.scrollHeight - window.innerHeight;
+      const max = isMobile ? window.innerHeight * 1.6 : fullPageMax;
       const p = max > 0 ? window.scrollY / max : 0;
-      setProgress(p);
+      setProgress(Math.min(1, p));
     };
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
     onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
   const tokens = (dark ? darkTokens : lightTokens) as CSSProperties;
