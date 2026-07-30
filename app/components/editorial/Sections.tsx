@@ -141,12 +141,13 @@ export function EdStrip() {
     "FABRIC",
     "COPILOT",
     "CLAUDE",
+    "CHATGPT",
     "GIULIETTA",
     "159",
     "145",
     "THE BASTARD",
     "KAMADO",
-    "FOODIE",
+    "ROOKMEESTER",
   ];
 
   return (
@@ -183,7 +184,7 @@ export function EdAbout() {
             color: "var(--ink-3)",
           }}
         >
-          Hoofdstuk Een - Het Vak
+          - Het Vak
         </span>
         <span style={{ ...editorialStyles.mono, fontSize: 11, color: "var(--ink-3)" }}>03</span>
       </div>
@@ -244,7 +245,7 @@ export function EdAiDev() {
             color: "var(--ink-3)",
           }}
         >
-          Hoofdstuk Twee - AI & Ontwikkeling
+          - AI & Ontwikkeling
         </span>
         <span style={{ ...editorialStyles.mono, fontSize: 11, color: "var(--ink-3)" }}>04</span>
       </div>
@@ -323,7 +324,7 @@ export function EdProjects() {
             color: "var(--ink-3)",
           }}
         >
-          Hoofdstuk Drie - Projecten
+          - Projecten
         </span>
         <span style={{ ...editorialStyles.mono, fontSize: 11, color: "var(--ink-3)" }}>05</span>
       </div>
@@ -411,7 +412,7 @@ export function EdContact() {
             color: "var(--ink-3)",
           }}
         >
-          Hoofdstuk Vijf - Contact
+          - Contact
         </span>
         <span style={{ ...editorialStyles.mono, fontSize: 11, color: "var(--ink-3)" }}>07</span>
       </div>
