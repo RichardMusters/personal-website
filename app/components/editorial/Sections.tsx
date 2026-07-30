@@ -148,6 +148,7 @@ export function EdStrip() {
     "THE BASTARD",
     "KAMADO",
     "ROOKMEESTER",
+    "RECEPTENVANRICHARD.NL",
   ];
 
   return (
