@@ -212,7 +212,7 @@ export function EdAbout() {
             <span className={styles.dropcap} style={editorialStyles.serif}>R</span>
             ichard is mijn naam.
             Rotterdammer, en overdag te vinden als IT Manager bij Harmony Service Center. 
-            Daar houd ik me bezig met alles waar een stekker aan zit — problemen oplossen, 
+            Daar houd ik me bezig met alles waar een stekker aan zit, problemen oplossen, 
             collega&apos;s helpen, nieuwe technologie uitproberen en processen slimmer maken.
             Zeg maar de man die je belt als &ldquo;het doet het niet&rdquo; en die niet rust tot het wél doet.
           </p>
@@ -229,8 +229,8 @@ export function EdAbout() {
           </p>
            <p style={{ margin: 0 }}>
             Verder ben ik een gezelschapsmens. Geef me een groep mensen, goed eten en een gesprek 
-            over tech of auto&apos;s en ik ben happy. Ik woon samen met mijn partner in Rotterdam, de
-            mooiste rot stad die er is — niet onderhandelbaar.
+            over tech of auto&apos;s en ik ben happy. Ik woon samen met mijn vrouw in Rotterdam, de
+            mooiste rot stad die er is, niet onderhandelbaar.
           </p>
 
 

@@ -18,3 +18,4 @@ Creating turbopack project { dir: 'C:\\Projecten\\rich-website', testMode: true 
 ✓ Compiled in 37ms
  GET / 200 in 420ms (next.js: 273ms, application-code: 147ms)
  GET / 200 in 221ms (next.js: 94ms, application-code: 128ms)
+✓ Compiled in 547ms
