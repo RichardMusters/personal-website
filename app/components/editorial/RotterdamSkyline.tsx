@@ -198,6 +198,7 @@ export default function RotterdamSkyline({
               width={WINDOW_WIDTH}
               height={WINDOW_HEIGHT}
               className={`${styles.skyWindow} ${litWindows.has(win.index) ? styles.skyWindowLit : ""}`}
+              style={{ transitionDelay: `${win.index * 55}ms` }}
             />
           ))}
         </g>
