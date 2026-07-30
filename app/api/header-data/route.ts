@@ -10,6 +10,7 @@ const LON = 4.48;
 const MAAS_STATION = "hoekvanholland";
 const RWS_URL =
   "https://ddapi20-waterwebservices.rijkswaterstaat.nl/ONLINEWAARNEMINGENSERVICES/OphalenWaarnemingen";
+/** Rijkswaterstaat uses large sentinel values (around 999999999) to mark "no measurement". */
 const RWS_MISSING = 100000;
 
 type OpenMeteoResponse = {
@@ -41,7 +42,7 @@ async function fetchWeather(signal: AbortSignal): Promise<Partial<HeaderData>> {
   };
 }
 
-type RwsMeting = { Meetwaarde?: { Waarde_Numeriek?: number } };
+type RwsMeting = { Meetwaarde?: { Waarde_Numeriek?: number }; Tijdstip?: string };
 type RwsSeries = { AquoMetadata?: { Eenheid?: { Code?: string } }; MetingenLijst?: RwsMeting[] };
 type RwsResponse = { Succesvol?: boolean; WaarnemingenLijst?: RwsSeries[] };
 
@@ -75,13 +76,16 @@ async function fetchWaterLevel(signal: AbortSignal): Promise<Partial<HeaderData>
   const series = json.WaarnemingenLijst?.[0];
   const unit = series?.AquoMetadata?.Eenheid?.Code ?? "cm";
   const readings = (series?.MetingenLijst ?? [])
-    .map((m) => m.Meetwaarde?.Waarde_Numeriek)
-    .filter((v): v is number => Number.isFinite(v) && Math.abs(v as number) < RWS_MISSING);
+    .map((m) => ({ value: m.Meetwaarde?.Waarde_Numeriek, time: m.Tijdstip }))
+    .filter(
+      (r): r is { value: number; time: string } =>
+        Number.isFinite(r.value) && Math.abs(r.value as number) < RWS_MISSING && Boolean(r.time)
+    );
 
-  const last = readings.at(-1);
-  if (last === undefined) return {};
+  if (readings.length === 0) return {};
 
-  const metres = unit.toLowerCase() === "cm" ? last / 100 : last;
+  const latest = readings.reduce((a, b) => (a.time > b.time ? a : b));
+  const metres = unit.toLowerCase() === "cm" ? latest.value / 100 : latest.value;
   return { waterLevel: Number(metres.toFixed(2)) };
 }
 
