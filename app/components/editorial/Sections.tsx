@@ -17,6 +17,7 @@ export function EdNav() {
       <nav className={styles.navLinks}>
         <a style={navLink} href="#about">Over</a>
         <a style={navLink} href="#work">Werk</a>
+        <a style={navLink} href="#projects">Projecten</a>
         <a style={navLink} href="#contact">Contact</a>
       </nav>
 
@@ -202,8 +203,8 @@ export function EdAbout() {
             ichard is mijn naam.
             Rotterdammer, en overdag te vinden als IT Manager bij Harmony Service Center. 
             Daar houd ik me bezig met alles waar een stekker aan zit — problemen oplossen, 
-            collega's helpen, nieuwe technologie uitproberen en processen slimmer maken. 
-            Zeg maar de man die je belt als "het doet het niet" en die niet rust tot het wél doet.
+            collega&apos;s helpen, nieuwe technologie uitproberen en processen slimmer maken.
+            Zeg maar de man die je belt als &ldquo;het doet het niet&rdquo; en die niet rust tot het wél doet.
           </p>
           <p style={{ margin: "0 0 22px" }}>
             Buiten werktijd vind je me ofwel achter de PS5 (waar ik mezelf wijs maak dat ik nog 
@@ -218,13 +219,141 @@ export function EdAbout() {
           </p>
            <p style={{ margin: 0 }}>
             Verder ben ik een gezelschapsmens. Geef me een groep mensen, goed eten en een gesprek 
-            over tech of auto's en ik ben happy. Ik woon samen met mijn partner in Rotterdam, de 
+            over tech of auto&apos;s en ik ben happy. Ik woon samen met mijn partner in Rotterdam, de
             mooiste rot stad die er is — niet onderhandelbaar.
           </p>
 
 
 
         </div>
+      </div>
+    </section>
+  );
+}
+
+export function EdAiDev() {
+  return (
+    <section className={styles.aboutSection}>
+      <div className={styles.sectionHeader} style={{ marginBottom: 56 }}>
+        <span
+          style={{
+            ...editorialStyles.mono,
+            fontSize: 11,
+            letterSpacing: 1.5,
+            textTransform: "uppercase",
+            color: "var(--ink-3)",
+          }}
+        >
+          Hoofdstuk Twee - AI & Ontwikkeling
+        </span>
+        <span style={{ ...editorialStyles.mono, fontSize: 11, color: "var(--ink-3)" }}>04</span>
+      </div>
+
+      <div className={styles.aboutGrid}>
+        <div>
+          <h2 className={styles.aboutTitle} style={editorialStyles.serif}>
+            Leren door
+            <br />
+            <em style={{ fontStyle: "italic", color: "var(--mint-deep)" }}>te bouwen.</em>
+          </h2>
+        </div>
+
+        <div className={styles.aboutBody}>
+          <p style={{ margin: "0 0 22px" }}>
+            <span className={styles.dropcap} style={editorialStyles.serif}>I</span>
+            k verdiep me steeds meer in wat AI kan betekenen voor mijn werk en mijn eigen
+            ontwikkeling. Niet alleen lezen erover, maar het zelf uitproberen en bouwen &mdash;
+            stap voor stap, project voor project.
+          </p>
+          <p style={{ margin: 0 }}>
+            Deze website is daar zelf een voorbeeld van: ontworpen en gebouwd samen met AI. Het is
+            een doorlopend proces van proberen, vastlopen en weer verder &mdash; en precies dat
+            proces deel ik hierna, in het volgende hoofdstuk.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+type ProjectPreview = {
+  type: "website" | "mcp";
+  title: string;
+  description: string;
+  status: string;
+};
+
+const projectPreviews: ProjectPreview[] = [
+  {
+    type: "website",
+    title: "Project Alpha",
+    description: "Sneak preview van een nieuwe website — meer details volgen binnenkort.",
+    status: "In ontwikkeling",
+  },
+  {
+    type: "website",
+    title: "Project Beta",
+    description: "Een tweede website-project, nog in de steigers.",
+    status: "Sneak preview",
+  },
+  {
+    type: "mcp",
+    title: "tool-runner-mcp",
+    description: "MCP server voor het uitvoeren van taken vanuit een AI-assistent.",
+    status: "In ontwikkeling",
+  },
+  {
+    type: "mcp",
+    title: "notion-sync-mcp",
+    description: "MCP server die notities synchroniseert met een AI-workflow.",
+    status: "Beschikbaar",
+  },
+];
+
+export function EdProjects() {
+  return (
+    <section id="projects" className={styles.projectsSection}>
+      <div className={styles.sectionHeader} style={{ marginBottom: 56 }}>
+        <span
+          style={{
+            ...editorialStyles.mono,
+            fontSize: 11,
+            letterSpacing: 1.5,
+            textTransform: "uppercase",
+            color: "var(--ink-3)",
+          }}
+        >
+          Hoofdstuk Drie - Projecten
+        </span>
+        <span style={{ ...editorialStyles.mono, fontSize: 11, color: "var(--ink-3)" }}>05</span>
+      </div>
+
+      <h2 className={styles.aboutTitle} style={{ ...editorialStyles.serif, marginBottom: 40 }}>
+        Sneak previews
+        <br />
+        <em style={{ fontStyle: "italic", color: "var(--mint-deep)" }}>uit de werkplaats.</em>
+      </h2>
+
+      <div className={styles.projectsGrid}>
+        {projectPreviews.map((project) => (
+          <div key={project.title} className={styles.projectCard}>
+            <span
+              className={`${styles.projectTag} ${
+                project.type === "website" ? styles.projectTagWebsite : styles.projectTagMcp
+              }`}
+              style={editorialStyles.mono}
+            >
+              {project.type === "website" ? "Website" : "MCP"}
+            </span>
+            <h3 className={styles.projectTitle} style={editorialStyles.serif}>
+              {project.title}
+            </h3>
+            <p className={styles.projectDescription}>{project.description}</p>
+            <span className={styles.projectStatus} style={editorialStyles.mono}>
+              {project.status}
+            </span>
+          </div>
+        ))}
       </div>
     </section>
   );
@@ -250,9 +379,9 @@ export function EdNumbers() {
             color: "#a8d8c8",
           }}
         >
-          De cijfers - kort
+          Hoofdstuk Vier - De cijfers
         </span>
-        <span style={{ ...editorialStyles.mono, fontSize: 11, color: "rgba(244,241,234,0.4)" }}>04</span>
+        <span style={{ ...editorialStyles.mono, fontSize: 11, color: "rgba(244,241,234,0.4)" }}>06</span>
       </div>
 
       <div className={styles.numbersGrid}>
@@ -284,7 +413,7 @@ export function EdContact() {
         >
           Hoofdstuk Vijf - Contact
         </span>
-        <span style={{ ...editorialStyles.mono, fontSize: 11, color: "var(--ink-3)" }}>05</span>
+        <span style={{ ...editorialStyles.mono, fontSize: 11, color: "var(--ink-3)" }}>07</span>
       </div>
 
       <h2 className={styles.contactTitle} style={editorialStyles.serif}>
