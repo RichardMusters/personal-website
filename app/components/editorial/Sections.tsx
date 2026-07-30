@@ -41,7 +41,21 @@ export function EdNav() {
   );
 }
 
-export function EdHero() {
+type HeroColophon = {
+  month: string;
+  weather: string | null;
+  water: string | null;
+  sun: string;
+};
+
+export function EdHero({ colophon }: { colophon: HeroColophon }) {
+  const leftParts = ["No. 01", "Rotterdam", "51.92N 4.48E", colophon.water].filter(
+    (part): part is string => Boolean(part)
+  );
+  const rightParts = [colophon.month, colophon.weather, colophon.sun].filter(
+    (part): part is string => Boolean(part)
+  );
+
   return (
     <section className={styles.heroSection}>
       <div
@@ -54,8 +68,8 @@ export function EdHero() {
           textTransform: "uppercase",
         }}
       >
-        <span>No. 01 &middot; Rotterdam &middot; 51.92N 4.48E</span>
-        <span>Editie / Mei 2026</span>
+        <span>{leftParts.join(" · ")}</span>
+        <span>{rightParts.join(" · ")}</span>
       </div>
 
       <div className={styles.heroGrid}>
