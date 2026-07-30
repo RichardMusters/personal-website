@@ -219,7 +219,7 @@ export function EdAbout() {
           <p style={{ margin: "0 0 22px" }}>
             Buiten werktijd vind je me ofwel achter de PS5 (waar ik mezelf wijs maak dat ik nog 
             steeds goed ben in FC26 en Fortnite), ofwel achter de kamado. Mijn zalm en picanha 
-            zijn legendarisch — althans, dat zeg ik zelf en niemand heeft me tot nu toe 
+            zijn legendarisch, althans, dat zeg ik zelf en niemand heeft me tot nu toe 
             tegengesproken. Uitnodigingen voor een BBQ kun je richten via contact mogelijkheden hieronder.
           </p>
           <p style={{ margin: "0 0 22px" }}>
