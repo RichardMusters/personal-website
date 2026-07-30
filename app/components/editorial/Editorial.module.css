@@ -205,6 +205,29 @@
   background: var(--bg-sand-2);
 }
 
+.projectImageLink {
+  display: block;
+  aspect-ratio: 16 / 10;
+  margin: -22px -22px 18px;
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+  border-radius: 6px 6px 0 0;
+  background: var(--mint-tint);
+}
+
+.projectImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.projectImageLink:hover .projectImage,
+.projectImageLink:focus-visible .projectImage {
+  transform: scale(1.03);
+}
+
 .projectTag {
   display: inline-block;
   font-size: 10px;

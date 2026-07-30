@@ -1,3 +1,4 @@
+import Image from "next/image";
 import styles from "./Editorial.module.css";
 import { editorialStyles, navLink } from "./tokens";
 import type { SkyColophon } from "./sky/useSkyState";
@@ -291,6 +292,11 @@ type ProjectPreview = {
   title: string;
   description: string;
   status: string;
+  teaser?: {
+    src: string;
+    alt: string;
+    href: string;
+  };
 };
 
 const projectPreviews: ProjectPreview[] = [
@@ -299,6 +305,11 @@ const projectPreviews: ProjectPreview[] = [
     title: "Project Alpha",
     description: "Sneak preview van een nieuwe website — meer details volgen binnenkort.",
     status: "In ontwikkeling",
+    teaser: {
+      src: "/rvrteaser.png",
+      alt: "Teaser voor Recepten van Richard",
+      href: "https://www.receptenvanrichard.nl",
+    },
   },
   {
     type: "website",
@@ -347,6 +358,24 @@ export function EdProjects() {
       <div className={styles.projectsGrid}>
         {projectPreviews.map((project) => (
           <div key={project.title} className={styles.projectCard}>
+            {project.teaser ? (
+              <a
+                className={styles.projectImageLink}
+                href={project.teaser.href}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`${project.title} openen in een nieuw tabblad`}
+              >
+                <Image
+                  className={styles.projectImage}
+                  src={project.teaser.src}
+                  alt={project.teaser.alt}
+                  width={1200}
+                  height={750}
+                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 1024px) calc((100vw - 56px) / 2), calc((100vw - 188px) / 4)"
+                />
+              </a>
+            ) : null}
             <span
               className={`${styles.projectTag} ${
                 project.type === "website" ? styles.projectTagWebsite : styles.projectTagMcp
