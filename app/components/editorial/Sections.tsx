@@ -302,8 +302,8 @@ type ProjectPreview = {
 const projectPreviews: ProjectPreview[] = [
   {
     type: "website",
-    title: "Project Alpha",
-    description: "Sneak preview van een nieuwe website — meer details volgen binnenkort.",
+    title: "Recepten van Richard",
+    description: "Een receptenwebsite in ontwikkeling voor kamado-liefhebbers, met eerlijke gerechten, echte rooksmaak en toegankelijke recepten die altijd lukken.",
     status: "In ontwikkeling",
     teaser: {
       src: "/rvrteaser.png",
