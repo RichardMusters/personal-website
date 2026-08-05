@@ -319,7 +319,7 @@ const projectPreviews: ProjectPreview[] = [
   },
   {
     type: "CLI",
-    title: "powerbi CLI",
+    title: "power bi CLI",
     description: "Een installatiewizard die pbi-cli op elke Windows-laptop werkend krijgt, inclusief ARM64-machines waar de standaardinstallatie stukloopt. Dubbelklikken, installeren, en een voortgangsbalk doet de rest. Geen terminal, geen commando's, geen PowerShell-kennis nodig.",
     status: "Beschikbaar",
   },
