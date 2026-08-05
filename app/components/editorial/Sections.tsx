@@ -318,10 +318,10 @@ const projectPreviews: ProjectPreview[] = [
     status: "Sneak preview",
   },
   {
-    type: "mcp",
-    title: "tool-runner-mcp",
-    description: "MCP server voor het uitvoeren van taken vanuit een AI-assistent.",
-    status: "In ontwikkeling",
+    type: "CLI",
+    title: "powerbi CLI",
+    description: "Een installatiewizard die pbi-cli op elke Windows-laptop werkend krijgt, inclusief ARM64-machines waar de standaardinstallatie stukloopt. Dubbelklikken, installeren, en een voortgangsbalk doet de rest. Geen terminal, geen commando's, geen PowerShell-kennis nodig.",
+    status: "Beschikbaar",
   },
   {
     type: "mcp",
