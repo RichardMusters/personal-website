@@ -295,7 +295,7 @@ type ProjectPreview = {
   teaser?: {
     src: string;
     alt: string;
-    href: string;
+    href?: string;
   };
 };
 
@@ -319,9 +319,13 @@ const projectPreviews: ProjectPreview[] = [
   },
   {
     type: "cli",
-    title: "power bi CLI",
+    title: "Power BI CLI",
     description: "Een installatiewizard die pbi-cli op elke Windows-laptop werkend krijgt, inclusief ARM64-machines waar de standaardinstallatie stukloopt. Dubbelklikken, installeren, en een voortgangsbalk doet de rest. Geen terminal, geen commando's, geen PowerShell-kennis nodig.",
     status: "Beschikbaar",
+    teaser: {
+      src: "/pbiclivisual.png",
+      alt: "Preview van de Power BI CLI installatiewizard",
+    },
   },
   {
     type: "mcp",
@@ -359,22 +363,35 @@ export function EdProjects() {
         {projectPreviews.map((project) => (
           <div key={project.title} className={styles.projectCard}>
             {project.teaser ? (
-              <a
-                className={styles.projectImageLink}
-                href={project.teaser.href}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={`${project.title} openen in een nieuw tabblad`}
-              >
-                <Image
-                  className={styles.projectImage}
-                  src={project.teaser.src}
-                  alt={project.teaser.alt}
-                  width={1200}
-                  height={750}
-                  sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 1024px) calc((100vw - 56px) / 2), calc((100vw - 188px) / 4)"
-                />
-              </a>
+              project.teaser.href ? (
+                <a
+                  className={styles.projectImageLink}
+                  href={project.teaser.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`${project.title} openen in een nieuw tabblad`}
+                >
+                  <Image
+                    className={styles.projectImage}
+                    src={project.teaser.src}
+                    alt={project.teaser.alt}
+                    width={1200}
+                    height={750}
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 1024px) calc((100vw - 56px) / 2), calc((100vw - 188px) / 4)"
+                  />
+                </a>
+              ) : (
+                <div className={styles.projectImageLink}>
+                  <Image
+                    className={styles.projectImage}
+                    src={project.teaser.src}
+                    alt={project.teaser.alt}
+                    width={1200}
+                    height={750}
+                    sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 1024px) calc((100vw - 56px) / 2), calc((100vw - 188px) / 4)"
+                  />
+                </div>
+              )
             ) : null}
             <span
               className={`${styles.projectTag} ${
