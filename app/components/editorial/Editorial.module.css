@@ -248,6 +248,11 @@
   color: var(--accent-deep);
 }
 
+.projectTagCli {
+  background: var(--slate-tint);
+  color: var(--slate-deep);
+}
+
 .projectTitle {
   font-size: 1.25rem;
   line-height: 1.15;

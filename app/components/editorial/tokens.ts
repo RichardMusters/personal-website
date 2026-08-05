@@ -20,6 +20,8 @@ export const lightTokens: Record<string, string> = {
   "--bridge-stroke-bot": "rgba(47,107,90,0.05)",
   "--accent-tint": "#ffe3d6",
   "--accent-deep": "#b3451f",
+  "--slate-tint": "#e4e7e6",
+  "--slate-deep": "#3b4a4d",
 };
 
 export const darkTokens: Record<string, string> = {
@@ -40,6 +42,8 @@ export const darkTokens: Record<string, string> = {
   "--bridge-stroke-bot": "rgba(168,216,200,0.05)",
   "--accent-tint": "#3a2620",
   "--accent-deep": "#ff8a5b",
+  "--slate-tint": "#2a2f31",
+  "--slate-deep": "#dad3c1",
 };
 
 export const editorialStyles = {

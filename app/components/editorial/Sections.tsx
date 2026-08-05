@@ -288,7 +288,7 @@ export function EdAiDev() {
 }
 
 type ProjectPreview = {
-  type: "website" | "mcp";
+  type: "website" | "mcp" | "cli";
   title: string;
   description: string;
   status: string;
@@ -318,7 +318,7 @@ const projectPreviews: ProjectPreview[] = [
     status: "Sneak preview",
   },
   {
-    type: "CLI",
+    type: "cli",
     title: "power bi CLI",
     description: "Een installatiewizard die pbi-cli op elke Windows-laptop werkend krijgt, inclusief ARM64-machines waar de standaardinstallatie stukloopt. Dubbelklikken, installeren, en een voortgangsbalk doet de rest. Geen terminal, geen commando's, geen PowerShell-kennis nodig.",
     status: "Beschikbaar",
@@ -378,11 +378,15 @@ export function EdProjects() {
             ) : null}
             <span
               className={`${styles.projectTag} ${
-                project.type === "website" ? styles.projectTagWebsite : styles.projectTagMcp
+                project.type === "website"
+                  ? styles.projectTagWebsite
+                  : project.type === "mcp"
+                    ? styles.projectTagMcp
+                    : styles.projectTagCli
               }`}
               style={editorialStyles.mono}
             >
-              {project.type === "website" ? "Website" : "MCP"}
+              {project.type === "website" ? "Website" : project.type === "mcp" ? "MCP" : "CLI"}
             </span>
             <h3 className={styles.projectTitle} style={editorialStyles.serif}>
               {project.title}
