@@ -112,8 +112,7 @@ export function EdHero({ colophon }: { colophon: SkyColophon }) {
           <div className={styles.quoteCard}>
             <div className={styles.quoteMark} style={editorialStyles.serif}>&ldquo;</div>
             <p className={styles.quoteText} style={editorialStyles.serif}>
-              De beste IT-systemen zijn onzichtbaar voor eindgebruikers
-              en onmisbaar voor het bedrijf.
+              De beste IT-systemen zijn onzichtbaar, de beste data onmisbaar en AI werkt alleen als beide op orde zijn.
             </p>
             <div className={styles.quoteMeta}>
               <span
@@ -124,7 +123,7 @@ export function EdHero({ colophon }: { colophon: SkyColophon }) {
                   letterSpacing: 0.5,
                 }}
               >
-                uit een gesprek, 2024
+                uit een gesprek, 2026
               </span>
               <span
                 style={{
