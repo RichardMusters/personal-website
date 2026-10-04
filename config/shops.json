@@ -1,0 +1,19 @@
+{
+  "voorkeur": [
+    { "domein": "nike.com", "naam": "Nike" },
+    { "domein": "adidas.nl", "naam": "adidas" },
+    { "domein": "newbalance.nl", "naam": "New Balance" },
+    { "domein": "zalando.nl", "naam": "Zalando" },
+    { "domein": "footlocker.nl", "naam": "Foot Locker" },
+    { "domein": "snipes.com", "naam": "Snipes" },
+    { "domein": "jdsports.nl", "naam": "JD Sports" },
+    { "domein": "sneakerdistrict.nl", "naam": "Sneaker District" },
+    { "domein": "endclothing.com", "naam": "END." }
+  ],
+  "resale": [
+    { "domein": "stockx.com", "naam": "StockX" },
+    { "domein": "goat.com", "naam": "GOAT" },
+    { "domein": "restocks.net", "naam": "Restocks" }
+  ],
+  "geblokkeerd": []
+}
