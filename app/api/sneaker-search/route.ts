@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, ThinkingLevel } from "@google/genai";
 import shopsJson from "@/config/shops.json";
 import { buildSystemPrompt, type ShopConfig } from "@/lib/sneaker-prompt";
 import type { SneakerResultaat, Aanbieding, Voorkeuren } from "@/lib/sneaker-types";
@@ -122,6 +122,10 @@ export async function POST(req: NextRequest) {
         systemInstruction: buildSystemPrompt(shops, voorkeuren),
         tools: [{ googleSearch: {} }],
         temperature: 0.2,
+        maxOutputTokens: 4096,
+        // Laag denkniveau: dit is een gestructureerde zoek-/verificatietaak, geen open redeneerprobleem.
+        // Scheelt meestal een paar seconden zonder merkbaar kwaliteitsverlies.
+        thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
       },
     });
 

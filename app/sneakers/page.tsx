@@ -318,7 +318,7 @@ export default function SneakersPage() {
 
         {laden && (
           <p className={styles.statusText}>
-            Sneaker herkennen en winkels doorzoeken. Dit duurt meestal 10 tot 20 seconden.
+            Sneaker herkennen en winkels doorzoeken. Dit duurt meestal 5 tot 15 seconden.
           </p>
         )}
         {fout && (
