@@ -41,6 +41,7 @@ export default function SneakersPage() {
   const [fout, setFout] = useState<string | null>(null);
   const [resultaat, setResultaat] = useState<SneakerResultaat | null>(null);
   const [voorkeuren, setVoorkeuren] = useState<Voorkeuren>(STANDAARD_VOORKEUREN);
+  const [weergave, setWeergave] = useState<"zoek" | "resultaat">("zoek");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
@@ -86,11 +87,21 @@ export default function SneakersPage() {
     if (cameraInputRef.current) cameraInputRef.current.value = "";
   }
 
+  function nieuweZoekactie() {
+    setQuery("");
+    verwijderFoto();
+    setResultaat(null);
+    setFout(null);
+    setLaden(false);
+    setWeergave("zoek");
+  }
+
   async function zoek() {
     if (!query.trim() && !foto) {
       setFout("Voer een SKU of omschrijving in, of kies een foto.");
       return;
     }
+    setWeergave("resultaat");
     setLaden(true);
     setFout(null);
     setResultaat(null);
@@ -140,6 +151,8 @@ export default function SneakersPage() {
           Zoek op SKU, omschrijving of een foto van het paar dat je zoekt.
         </p>
 
+      {weergave === "zoek" && (
+        <>
         <details className={styles.prefs}>
           <summary>Voorkeuren &mdash; merk: {voorkeuren.merkFilter || "alle"}, maat EU {voorkeuren.maat}, bezorgland: {voorkeuren.bezorgland}</summary>
           <div className={styles.prefsGrid}>
@@ -315,6 +328,14 @@ export default function SneakersPage() {
             </button>
           </div>
         )}
+        </>
+      )}
+
+      {weergave === "resultaat" && (
+        <>
+        <button type="button" className={styles.terugKnop} onClick={nieuweZoekactie}>
+          ← Nieuwe zoekactie
+        </button>
 
         {laden && (
           <p className={styles.statusText}>
@@ -470,6 +491,8 @@ export default function SneakersPage() {
             </p>
           </section>
         )}
+        </>
+      )}
 
         <p className={styles.note}>Zoekresultaten worden aangedreven door de Gemini API van Google</p>
       </div>
