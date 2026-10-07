@@ -107,7 +107,8 @@
   color: var(--ink-300);
 }
 
-.prefsField input {
+.prefsField input,
+.prefsField select {
   height: 40px;
   padding: 0 12px;
   border: 1px solid var(--ink-600);
@@ -115,11 +116,61 @@
   background: var(--ink-850);
   color: var(--ink-50);
   font-size: 14px;
+  font-family: var(--font-inter-tight), system-ui, sans-serif;
   outline: none;
 }
 
-.prefsField input:focus {
+.prefsField select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a8a90' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 32px;
+}
+
+.prefsField input:focus,
+.prefsField select:focus {
   border-color: var(--brand-500);
+}
+
+.maatVeld {
+  display: flex;
+  gap: 8px;
+}
+
+.maatVeld select {
+  flex: 1;
+  min-width: 0;
+}
+
+.maatToggle {
+  flex-shrink: 0;
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--ink-600);
+  border-radius: 10px;
+  background: var(--ink-850);
+}
+
+.maatToggleBtn {
+  height: 36px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink-300);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.maatToggleBtnActief {
+  background: var(--brand-500);
+  color: var(--ink-950);
+  font-weight: 700;
 }
 
 .prefsCheckbox {

@@ -5,6 +5,7 @@ export type ShopConfig = { voorkeur: Shop[]; resale: Shop[]; geblokkeerd: Blocke
 export type Voorkeuren = {
   bezorgland: string;
   maat: string;
+  maatSysteem: "EU" | "US";
   merkFilter: string | null;
   maxPrijs: number | null;
   resaleToegestaan: boolean;
@@ -12,6 +13,7 @@ export type Voorkeuren = {
 
 export function buildSystemPrompt(shops: ShopConfig, voorkeuren: Voorkeuren): string {
   const list = (s: Shop[]) => s.map((x) => `- ${x.naam} (${x.domein})`).join("\n");
+  const maatLabel = `${voorkeuren.maatSysteem} ${voorkeuren.maat}`;
 
   return `Je bent een persoonlijke sneakerzoeker. Je doel is niet om zoveel mogelijk resultaten te tonen, maar
 om de juiste schoen te vinden bij betrouwbare Europese webwinkels, tegen de beste actuele totaalprijs en met
@@ -20,7 +22,7 @@ controleerbare beschikbaarheid in de opgegeven maat.
 VASTE VOORKEUREN (gebruik deze tenzij de zoekopdracht van de bezoeker expliciet iets anders aangeeft —
 een expliciete opdracht heeft altijd voorrang op onderstaande standaardvoorkeuren)
 - Merk: ${voorkeuren.merkFilter ?? "geen voorkeur, toon alle merken"}
-- Maat: EU ${voorkeuren.maat}
+- Maat: ${maatLabel}${voorkeuren.maatSysteem === "US" ? " (Amerikaanse herenmaat — reken zelf om naar de bijbehorende EU-maat van dit merk voor de maatcontrole, want Europese winkels tonen meestal alleen EU-maten)" : ""}
 - Staat: nieuw
 - Markt: Europese webwinkels
 - Verkooptype: reguliere retail
@@ -68,12 +70,25 @@ Controleer per aanbieding minimaal merk, model, colorway en SKU indien vermeld. 
 - "andere_uitvoering" — vergelijkbare kleur/model, maar aantoonbaar een andere uitvoering
 Een vergelijkbare kleur is geen exacte match.
 
-STAP 5 — CONTROLEER MAAT EU ${voorkeuren.maat} (harde eis)
-Controleer specifiek of EU ${voorkeuren.maat} op dit moment geselecteerd kan worden, op voorraad is, en
-daadwerkelijk besteld kan worden. Het enkele feit dat een maattabel "${voorkeuren.maat}" noemt of dat een
-pagina geïndexeerd is, telt NIET als voorraadcontrole. Zet "maatBeschikbaarheid" op "beschikbaar",
-"uitverkocht" of "onzeker" (onzeker = voorraad niet betrouwbaar te controleren). Noem een winkel niet
-"beschikbaar" wanneer je alleen een zoekresultaat, oude cache of snippet hebt gezien.
+STAP 5 — CONTROLEER MAAT ${maatLabel} (harde eis)
+Controleer specifiek of de opgegeven maat op dit moment geselecteerd kan worden, op voorraad is, en
+daadwerkelijk besteld kan worden. Het enkele feit dat een maattabel deze maat noemt of dat een pagina
+geïndexeerd is, telt NIET als voorraadcontrole. Zet "maatBeschikbaarheid" op "beschikbaar", "uitverkocht" of
+"onzeker" (onzeker = voorraad niet betrouwbaar te controleren). Noem een winkel niet "beschikbaar" wanneer je
+alleen een zoekresultaat, oude cache of snippet hebt gezien.
+
+Let op notatie van halve maten: Europese webwinkels (ook buiten Nederland) schrijven een halve maat soms met
+een punt (bv. "44.5"), soms met een komma (bv. "44,5"), en soms zonder scheidingsteken of als breuk (bv.
+"44 1/2" of "445"). Dit is afhankelijk van het land van de winkel en wijkt af van de Nederlandse schrijfwijze.
+Behandel deze notaties als dezelfde maat — een andere schrijfwijze betekent niet een andere maat. Gebruik dit
+actief in je zoekopdrachten: probeer bij twijfel meerdere schrijfwijzen om geen geldige aanbieding mis te
+lopen.${
+    voorkeuren.maatSysteem === "US"
+      ? ` Reken de opgegeven US-maat om naar de EU-maat van het betreffende merk (Nike, adidas en New
+Balance hanteren voor herenmaten vrijwel dezelfde EU-schaal) en controleer die EU-maat op de productpagina;
+vermeld in "opmerking" welke EU-maat je hebt aangehouden.`
+      : ""
+  }
 
 STAP 6 — PRIJS
 Gebruik de actuele verkoopprijs in "prijs". Maak in "opmerking" onderscheid tussen normale prijs,

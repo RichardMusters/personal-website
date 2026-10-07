@@ -9,10 +9,12 @@ type Foto = { mimeType: string; data: string; preview: string; naam: string };
 const STANDAARD_VOORKEUREN: Voorkeuren = {
   bezorgland: "Nederland",
   maat: "45",
+  maatSysteem: "EU",
   merkFilter: "Nike",
   maxPrijs: null,
   resaleToegestaan: false,
 };
+const STANDAARD_MAAT: Record<Voorkeuren["maatSysteem"], string> = { EU: "45", US: "11" };
 const VOORKEUREN_KEY = "sneakers:voorkeuren";
 
 // Verkleint de foto in de browser naar max 1024px (scheelt tokens en uploadtijd)
@@ -29,6 +31,19 @@ async function verkleinFoto(file: File, max = 1024): Promise<Foto> {
 
 const euro = (n: number | null, valuta = "EUR") =>
   n == null ? "onbekend" : new Intl.NumberFormat("nl-NL", { style: "currency", currency: valuta || "EUR" }).format(n);
+
+function maatReeks(van: number, tot: number): string[] {
+  const reeks: string[] = [];
+  for (let m = van; m <= tot; m += 0.5) {
+    reeks.push(Number.isInteger(m) ? String(m) : m.toFixed(1));
+  }
+  return reeks;
+}
+
+// EU-maatreeks van Nike, New Balance en adidas: 30 t/m 49 in halve maten.
+const SCHOENMATEN_EU = maatReeks(30, 49);
+// Amerikaanse herenmaat (Nike/adidas/New Balance): 3 t/m 18 in halve maten.
+const SCHOENMATEN_US = maatReeks(3, 18);
 
 const maatLabel = { beschikbaar: "Beschikbaar", uitverkocht: "Uitverkocht", onzeker: "Niet te controleren" } as const;
 const matchLabel = { exact: "Exacte match", waarschijnlijk: "Waarschijnlijke match", andere_uitvoering: "Andere uitvoering" } as const;
@@ -62,6 +77,18 @@ export default function SneakersPage() {
   function wijzigVoorkeur<K extends keyof Voorkeuren>(key: K, value: Voorkeuren[K]) {
     setVoorkeuren((prev) => {
       const next = { ...prev, [key]: value };
+      try {
+        localStorage.setItem(VOORKEUREN_KEY, JSON.stringify(next));
+      } catch {
+        /* privénavigatie o.i.d. — niet kritiek */
+      }
+      return next;
+    });
+  }
+
+  function wijzigMaatSysteem(systeem: Voorkeuren["maatSysteem"]) {
+    setVoorkeuren((prev) => {
+      const next = { ...prev, maatSysteem: systeem, maat: STANDAARD_MAAT[systeem] };
       try {
         localStorage.setItem(VOORKEUREN_KEY, JSON.stringify(next));
       } catch {
@@ -154,7 +181,7 @@ export default function SneakersPage() {
       {weergave === "zoek" && (
         <>
         <details className={styles.prefs}>
-          <summary>Voorkeuren &mdash; merk: {voorkeuren.merkFilter || "alle"}, maat EU {voorkeuren.maat}, bezorgland: {voorkeuren.bezorgland}</summary>
+          <summary>Voorkeuren &mdash; merk: {voorkeuren.merkFilter || "alle"}, maat {voorkeuren.maatSysteem} {voorkeuren.maat}, bezorgland: {voorkeuren.bezorgland}</summary>
           <div className={styles.prefsGrid}>
             <label className={styles.prefsField}>
               <span>Merk (leeg = alle merken)</span>
@@ -166,13 +193,34 @@ export default function SneakersPage() {
               />
             </label>
             <label className={styles.prefsField}>
-              <span>Maat (EU)</span>
-              <input
-                type="text"
-                value={voorkeuren.maat}
-                onChange={(e) => wijzigVoorkeur("maat", e.target.value)}
-                placeholder="45"
-              />
+              <span>Maat</span>
+              <div className={styles.maatVeld}>
+                <div className={styles.maatToggle} role="group" aria-label="Maatsysteem">
+                  <button
+                    type="button"
+                    aria-pressed={voorkeuren.maatSysteem === "EU"}
+                    className={voorkeuren.maatSysteem === "EU" ? `${styles.maatToggleBtn} ${styles.maatToggleBtnActief}` : styles.maatToggleBtn}
+                    onClick={() => wijzigMaatSysteem("EU")}
+                  >
+                    EU
+                  </button>
+                  <button
+                    type="button"
+                    aria-pressed={voorkeuren.maatSysteem === "US"}
+                    className={voorkeuren.maatSysteem === "US" ? `${styles.maatToggleBtn} ${styles.maatToggleBtnActief}` : styles.maatToggleBtn}
+                    onClick={() => wijzigMaatSysteem("US")}
+                  >
+                    US
+                  </button>
+                </div>
+                <select value={voorkeuren.maat} onChange={(e) => wijzigVoorkeur("maat", e.target.value)}>
+                  {(voorkeuren.maatSysteem === "EU" ? SCHOENMATEN_EU : SCHOENMATEN_US).map((maat) => (
+                    <option key={maat} value={maat}>
+                      {maat}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </label>
             <label className={styles.prefsField}>
               <span>Bezorgland</span>

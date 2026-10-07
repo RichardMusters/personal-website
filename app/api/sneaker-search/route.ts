@@ -16,6 +16,7 @@ const TOEGESTANE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const STANDAARD_VOORKEUREN: Voorkeuren = {
   bezorgland: "Nederland",
   maat: "45",
+  maatSysteem: "EU",
   merkFilter: "Nike",
   maxPrijs: null,
   resaleToegestaan: false,

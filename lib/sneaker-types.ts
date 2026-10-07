@@ -1,6 +1,7 @@
 export type Voorkeuren = {
   bezorgland: string;
   maat: string;
+  maatSysteem: "EU" | "US";
   merkFilter: string | null;
   maxPrijs: number | null;
   resaleToegestaan: boolean;
