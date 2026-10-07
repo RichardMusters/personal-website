@@ -115,7 +115,7 @@ export async function POST(req: NextRequest) {
       : "Identificeer de sneaker op deze foto en zoek waar hij te koop is.",
   });
 
-  try {
+  async function voerZoekUit() {
     const response = await ai.models.generateContent({
       model: MODEL,
       contents: [{ role: "user", parts }],
@@ -124,16 +124,36 @@ export async function POST(req: NextRequest) {
         tools: [{ googleSearch: {} }],
         temperature: 0.2,
         maxOutputTokens: 4096,
-        // Laag denkniveau: dit is een gestructureerde zoek-/verificatietaak, geen open redeneerprobleem.
-        // Scheelt meestal een paar seconden zonder merkbaar kwaliteitsverlies.
+        // LOW voor snelheid. Een hoger denkniveau (MEDIUM/HIGH) bleek 45-90+ seconden te kunnen kosten bij
+        // een lastig te vinden schoen — te traag en te onvoorspelbaar. Een lege eerste poging vangen we
+        // hieronder op met één snelle herhaling in plaats van met een trager denkniveau.
         thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
       },
     });
-
     const resultaat = parseJson(response.text ?? "");
-    if (!resultaat) {
+    return resultaat ? { resultaat, response } : null;
+  }
+
+  try {
+    const begin = Date.now();
+    let poging = await voerZoekUit();
+    if (!poging) {
       return NextResponse.json({ fout: "Het zoekresultaat kon niet worden gelezen. Probeer het opnieuw." }, { status: 502 });
     }
+
+    const isLeeg = (p: NonNullable<typeof poging>) => !p.resultaat.gevonden || (p.resultaat.aanbiedingen ?? []).length === 0;
+    // Alleen herhalen als de eerste poging snel leeg terugkwam — bij een al trage, lastig te vinden
+    // schoen zou een tweede volledige zoekpoging het serverless-tijdslimiet (60s) kunnen overschrijden.
+    if (isLeeg(poging) && Date.now() - begin < 25_000) {
+      try {
+        const herhaling = await voerZoekUit();
+        if (herhaling) poging = herhaling;
+      } catch {
+        /* herhaling mislukt — ga door met de eerste (lege) uitkomst */
+      }
+    }
+
+    const { resultaat, response } = poging;
 
     // Bronnen die Gemini echt via Google Search heeft gebruikt.
     // De uri is vaak een Google-redirect; de title bevat meestal het domein.
@@ -188,7 +208,11 @@ export async function POST(req: NextRequest) {
       waarschuwingen,
       gecontroleerdOp: new Date().toISOString(),
     };
-    if (cacheKey) cache.set(cacheKey, { data, verloopt: Date.now() + 6 * 60 * 60 * 1000 });
+    // Geen lege/negatieve resultaten cachen — anders blokkeert één mislukte zoekpoging alle volgende
+    // pogingen voor hetzelfde zoekterm, terwijl voorraad juist snel kan veranderen.
+    if (cacheKey && data.gevonden && data.aanbiedingen.length > 0) {
+      cache.set(cacheKey, { data, verloopt: Date.now() + 30 * 60 * 1000 });
+    }
 
     return NextResponse.json(data);
   } catch (err: unknown) {

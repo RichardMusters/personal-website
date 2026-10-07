@@ -8,7 +8,13 @@
     { "domein": "snipes.com", "naam": "Snipes" },
     { "domein": "jdsports.nl", "naam": "JD Sports" },
     { "domein": "sneakerdistrict.nl", "naam": "Sneaker District" },
-    { "domein": "endclothing.com", "naam": "END." }
+    { "domein": "endclothing.com", "naam": "END." },
+    { "domein": "footdistrict.com", "naam": "Footdistrict" },
+    { "domein": "solebox.com", "naam": "Solebox" },
+    { "domein": "titolo.ch", "naam": "Titolo" },
+    { "domein": "43einhalb.com", "naam": "43einhalb" },
+    { "domein": "sneakersnstuff.com", "naam": "Sneakersnstuff" },
+    { "domein": "courir.com", "naam": "Courir" }
   ],
   "resale": [
     { "domein": "stockx.com", "naam": "StockX" },

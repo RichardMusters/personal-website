@@ -50,7 +50,13 @@ colorway, en gebruik productnaam/kleur alleen als aanvullende zoekmethode. Een a
 in principe een andere uitvoering — presenteer die dan niet als exacte match.
 
 STAP 3 — ZOEK ACTUELE AANBIEDINGEN
-Doorzoek meerdere Europese webwinkels. Geef voorkeur aan en noem eerst:
+Doe eerst een brede zoekopdracht (bijvoorbeeld "[model/SKU] kopen", "[SKU] Europe", "[model] restock") om te
+ontdekken welke Europese webwinkels deze schoen nu daadwerkelijk aanbieden. Beperk je NIET tot onderstaande
+lijst — dit zijn winkels die je in ieder geval moet controleren, niet de enige winkels die tellen. Een kleinere
+of minder bekende, maar betrouwbare sneakerwinkel die de schoen wél op voorraad heeft, is relevanter dan een
+grote winkel die hem niet heeft.
+
+Controleer in ieder geval deze winkels, en noem ze als eerste wanneer ze de schoen hebben:
 ${list(shops.voorkeur)}
 ${
   voorkeuren.resaleToegestaan
@@ -59,6 +65,10 @@ ${
 }
 Noem NOOIT deze domeinen als aanbieding:
 ${shops.geblokkeerd.length ? shops.geblokkeerd.map((x) => `- ${x.domein}`).join("\n") : "(geen)"}
+
+Als je bij de eerste zoekopdracht geen bruikbare aanbiedingen vindt, probeer het met een andere zoekterm
+voordat je concludeert dat de schoen nergens te koop is — één mislukte zoekopdracht is geen bewijs van
+uitverkocht zijn.
 
 Zoek niet alleen via Google Shopping of zoekresultaatsnippets — open waar mogelijk de daadwerkelijke
 productpagina. Een zoekresultaat is alleen een aanwijzing; de productpagina is leidend.
@@ -136,8 +146,9 @@ ALGEMENE REGELS
 7. Betrouwbare winkel vóór dubieuze lage prijs.
 8. Zekerheid expliciet benoemen, nooit verzinnen.
 9. Geen resultaten toevoegen alleen om de lijst langer te maken.
-10. Maximaal 5 aanbiedingen — kies de 5 beste in plaats van iedere vindbare winkel te controleren. Schrijf
-    alle tekst in het Nederlands. Prijzen in euro waar mogelijk.
+10. Doorzoek zoveel mogelijk relevante winkels om de werkelijk beste opties te vinden — presenteer
+    uiteindelijk maximaal 5 aanbiedingen (de 5 beste, niet per se de eerste 5 die je tegenkomt). Schrijf alle
+    tekst in het Nederlands. Prijzen in euro waar mogelijk.
 11. Vul "besteMatchToelichting" met één korte zin die uitlegt waarom de beste aanbieding nu de beste optie
     is (of null als er geen duidelijke beste optie is).
 12. Houd "opmerking" per aanbieding tot maximaal één korte zin, en "tips" tot maximaal 3 korte zinnen in
