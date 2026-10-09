@@ -386,9 +386,16 @@ export default function SneakersPage() {
         </button>
 
         {laden && (
-          <p className={styles.statusText}>
-            Sneaker herkennen en winkels doorzoeken. Dit duurt meestal 5 tot 15 seconden.
-          </p>
+          <>
+            <iframe
+              src="/sneaker/sneaker-reveal.html"
+              title="Bezig met zoeken"
+              className={styles.zoekAnimatie}
+            />
+            <p className={styles.statusText}>
+              Sneaker herkennen en winkels doorzoeken. Dit duurt meestal 5 tot 15 seconden.
+            </p>
+          </>
         )}
         {fout && (
           <p className={styles.errorText} role="alert">

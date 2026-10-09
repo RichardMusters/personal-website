@@ -361,6 +361,14 @@
   color: var(--brand-300, var(--brand-400));
 }
 
+.zoekAnimatie {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  margin-top: clamp(24px, 4vw, 32px);
+  border: 0;
+}
+
 .statusText {
   margin-top: 20px;
   font-family: var(--font-inter-tight), system-ui, sans-serif;

@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sneaker reveal</title>
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        /* palette */
+        --studio-deep: #070708;
+        --studio-mid: #141416;
+        --studio-floor: #1b1b1e;
+        --line: #ffffff;
+        --spot: rgba(255, 244, 228, 0.16);
+        --spot-floor: rgba(255, 240, 220, 0.12);
+        --shadow: rgba(0, 0, 0, 0.75);
+        --sweep: rgba(255, 255, 255, 0.85);
+        --clay: #50505a;
+        --ink: #f4f2ec;
+
+        /* sneaker rig geometry (art is 1894x886 → shown at 1380x646) */
+        --rig-w: 1380px;
+        --rig-h: 646px;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      /* ---- embed wrapper: fluid 16:9 box; the 1920x1080 stage scales to fit ---- */
+      .sneaker-embed {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+        background: var(--studio-deep);
+      }
+      #stage {
+        position: absolute;
+        left: 0;
+        top: 0;
+        transform-origin: 0 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background:
+          radial-gradient(ellipse 70% 55% at 50% 42%, var(--studio-mid) 0%, transparent 70%),
+          linear-gradient(180deg, var(--studio-deep) 0%, var(--studio-deep) 62%, var(--studio-floor) 100%);
+      }
+
+      /* ---- studio light (beat 3) ---- */
+      .spot {
+        position: absolute;
+        pointer-events: none;
+        opacity: 0;
+      }
+      #spot-key {
+        left: 160px;
+        top: -120px;
+        width: 1600px;
+        height: 1100px;
+        background: radial-gradient(ellipse 50% 50% at 50% 50%, var(--spot) 0%, transparent 70%);
+      }
+      #spot-floor {
+        left: 400px;
+        top: 672px;
+        width: 1120px;
+        height: 260px;
+        background: radial-gradient(ellipse 50% 50% at 50% 50%, var(--spot-floor) 0%, transparent 70%);
+      }
+      #contact-shadow {
+        position: absolute;
+        left: 350px;
+        top: 724px;
+        width: 1220px;
+        height: 70px;
+        border-radius: 50%;
+        background: radial-gradient(ellipse 50% 50% at 50% 50%, var(--shadow) 0%, transparent 72%);
+        filter: blur(6px);
+        opacity: 0;
+      }
+
+      /* ---- handwritten tagline ---- */
+      @font-face {
+        font-family: "Caveat";
+        src: url("assets/fonts/Caveat-700-latin.woff2") format("woff2");
+        font-weight: 700;
+        font-display: block;
+      }
+      #tagline {
+        position: absolute;
+        left: 0;
+        top: 828px;
+        width: 1920px;
+        text-align: center;
+        font-family: "Caveat", cursive;
+        font-weight: 700;
+        font-size: 108px;
+        line-height: 1.1;
+        color: var(--ink);
+        text-shadow: 0 2px 18px rgba(0, 0, 0, 0.5);
+        --dir: 90deg;
+      }
+
+      /* ---- construction guides (beat 1) ---- */
+      #guides {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+      #guides path,
+      #guides line,
+      #guides ellipse {
+        fill: none;
+        stroke: var(--line);
+        stroke-width: 1.5;
+        opacity: 0.32;
+      }
+      #guides .tick {
+        stroke-width: 2;
+        opacity: 0.55;
+      }
+
+      /* ---- sneaker rig ---- */
+      #rig {
+        position: absolute;
+        left: calc(960px - var(--rig-w) / 2);
+        top: calc(440px - var(--rig-h) / 2);
+        width: var(--rig-w);
+        height: var(--rig-h);
+      }
+      #breath {
+        position: absolute;
+        inset: 0;
+        transform-origin: 50% 85%;
+      }
+      .layer {
+        position: absolute;
+        inset: 0;
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+      }
+
+      /* feathered wipe driven by --p (0 → 1); direction from --dir */
+      .wipe {
+        --p: 0;
+        -webkit-mask-image: linear-gradient(
+          var(--dir, 90deg),
+          #000 calc(var(--p) * 130% - 30%),
+          transparent calc(var(--p) * 130%)
+        );
+        mask-image: linear-gradient(
+          var(--dir, 90deg),
+          #000 calc(var(--p) * 130% - 30%),
+          transparent calc(var(--p) * 130%)
+        );
+      }
+
+      .lines {
+        filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
+      }
+      #lines-sole {
+        background-image: url("assets/lines-sole.webp");
+        --dir: 90deg;
+      }
+      #lines-upper {
+        background-image: url("assets/lines-upper.webp");
+        --dir: 0deg;
+      }
+      #lines-laces {
+        background-image: url("assets/lines-laces.webp");
+        --dir: 135deg;
+      }
+
+      #panel-sole {
+        background-image: url("assets/panel-sole.webp");
+        --dir: 90deg;
+      }
+      #panel-white {
+        background-image: url("assets/panel-white.webp");
+        --dir: 0deg;
+      }
+      #panel-red {
+        background-image: url("assets/panel-red.webp");
+        --dir: 270deg;
+      }
+      #panel-black {
+        background-image: url("assets/panel-black.webp");
+        --dir: 160deg;
+      }
+      /* flat clay silhouette: unfilled panels read as one even form, not holes.
+         Made by flattening the cutout to grey with filters (no image masks: those are
+         blocked by CORS when the page runs from disk or images come from another host) */
+      #ghost {
+        background-image: url("assets/sneaker-cutout.webp");
+        filter: brightness(0) invert(0.33);
+        opacity: 0;
+      }
+      #full {
+        background-image: url("assets/sneaker-cutout.webp");
+        opacity: 0;
+      }
+
+      /* shimmer-sweep (registry component), adapted: the band is a brightened copy of
+         the panel image revealed through a moving gradient mask, so the light only
+         lands on that panel (gradient masks need no CORS, unlike url() masks) */
+      .sweep {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+        filter: brightness(2.4) saturate(0.35);
+        mix-blend-mode: screen;
+        opacity: 0.75;
+        --shimmer-pos: -30%;
+        -webkit-mask-image: linear-gradient(
+          var(--shimmer-angle, 115deg),
+          transparent calc(var(--shimmer-pos) - var(--shimmer-width, 16%) / 2),
+          #000 var(--shimmer-pos),
+          transparent calc(var(--shimmer-pos) + var(--shimmer-width, 16%) / 2)
+        );
+        mask-image: linear-gradient(
+          var(--shimmer-angle, 115deg),
+          transparent calc(var(--shimmer-pos) - var(--shimmer-width, 16%) / 2),
+          #000 var(--shimmer-pos),
+          transparent calc(var(--shimmer-pos) + var(--shimmer-width, 16%) / 2)
+        );
+      }
+      #sweep-sole {
+        background-image: url("assets/panel-sole.webp");
+      }
+      #sweep-white {
+        background-image: url("assets/panel-white.webp");
+      }
+      #sweep-red {
+        background-image: url("assets/panel-red.webp");
+      }
+      #sweep-black {
+        background-image: url("assets/panel-black.webp");
+      }
+    </style>
+  </head>
+  <body style="margin: 0; background: #070708">
+    <div class="sneaker-embed" role="img" aria-label="Bezig met zoeken: a pair of red, white and black high-top sneakers is sketched in white line art, then fills in with color panel by panel and settles under a soft spotlight.">
+    <div id="stage" data-composition-id="sneaker-reveal" data-start="0" data-duration="10" data-fps="30" data-width="1920" data-height="1080">
+      <div id="shot" class="clip" data-start="0" data-duration="10" data-track-index="0" style="position: absolute; inset: 0">
+        <div id="spot-key" class="spot"></div>
+        <div id="spot-floor" class="spot"></div>
+        <div id="contact-shadow"></div>
+
+        <svg id="guides" width="1920" height="1080" viewBox="0 0 1920 1080">
+          <line id="g-ground" x1="140" y1="758" x2="1780" y2="758" pathLength="1" />
+          <line id="g-center" x1="960" y1="90" x2="960" y2="800" pathLength="1" />
+          <ellipse id="g-orbit" cx="960" cy="758" rx="640" ry="40" pathLength="1" />
+          <path class="tick" id="g-tl" d="M 200 150 L 200 110 L 240 110" pathLength="1" />
+          <path class="tick" id="g-tr" d="M 1680 110 L 1720 110 L 1720 150" pathLength="1" />
+          <path class="tick" id="g-bl" d="M 200 960 L 200 1000 L 240 1000" pathLength="1" />
+          <path class="tick" id="g-br" d="M 1680 1000 L 1720 1000 L 1720 960" pathLength="1" />
+        </svg>
+
+        <div id="tagline" class="wipe">Bezig met zoeken</div>
+
+
+        <div id="rig">
+          <div id="breath">
+            <!-- faint blueprint form under the sketch -->
+            <div id="ghost" class="layer"></div>
+            <!-- beat 2: color panels, each with its own light sweep -->
+            <div id="panel-sole" class="layer wipe"></div>
+            <div id="sweep-sole" class="sweep"></div>
+            <div id="panel-white" class="layer wipe"></div>
+            <div id="sweep-white" class="sweep"></div>
+            <div id="panel-red" class="layer wipe"></div>
+            <div id="sweep-red" class="sweep"></div>
+            <div id="panel-black" class="layer wipe"></div>
+            <div id="sweep-black" class="sweep"></div>
+            <!-- seamless final plate (hides panel anti-alias seams) -->
+            <div id="full" class="layer"></div>
+            <!-- beat 1: construction line art, drawn region by region -->
+            <div id="lines-sole" class="layer lines wipe"></div>
+            <div id="lines-upper" class="layer lines wipe"></div>
+            <div id="lines-laces" class="layer lines wipe"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+
+      /* ---------- Beat 1 (0–3s): construction lines sketch in ---------- */
+      tl.fromTo(
+        ["#g-ground", "#g-center", "#g-orbit"],
+        { strokeDasharray: 1, strokeDashoffset: 1 },
+        { strokeDashoffset: 0, duration: 0.9, ease: "power2.inOut", stagger: 0.12 },
+        0.05,
+      );
+      tl.fromTo(
+        ["#g-tl", "#g-tr", "#g-bl", "#g-br"],
+        { strokeDasharray: 1, strokeDashoffset: 1 },
+        { strokeDashoffset: 0, duration: 0.4, ease: "power2.out", stagger: 0.06 },
+        0.15,
+      );
+
+      // handwritten tagline writes itself in, left to right
+      tl.fromTo("#tagline", { "--p": 0 }, { "--p": 1, duration: 1.6, ease: "power1.inOut" }, 0.5);
+
+      // sole → upper → laces, each a feathered pen-sweep reveal of its line art
+      tl.fromTo("#lines-sole", { "--p": 0 }, { "--p": 1, duration: 1.0, ease: "power1.inOut" }, 0.2);
+      tl.fromTo("#lines-upper", { "--p": 0 }, { "--p": 1, duration: 1.1, ease: "power1.inOut" }, 1.05);
+      tl.fromTo("#lines-laces", { "--p": 0 }, { "--p": 1, duration: 0.85, ease: "power1.inOut" }, 2.0);
+
+      // a faint form gathers under the finished sketch
+      tl.fromTo("#ghost", { opacity: 0 }, { opacity: 0.7, duration: 0.8, ease: "sine.inOut" }, 2.3);
+
+      /* ---------- Beat 2 (3–7s): panels fill, each with a light sweep ---------- */
+      const PANELS = [
+        { id: "sole", lines: "#lines-sole", at: 3.0 },
+        { id: "white", lines: null, at: 3.85 },
+        { id: "red", lines: "#lines-upper", at: 4.7 },
+        { id: "black", lines: "#lines-laces", at: 5.55 },
+      ];
+      PANELS.forEach((p) => {
+        tl.fromTo(`#panel-${p.id}`, { "--p": 0 }, { "--p": 1, duration: 0.8, ease: "power2.inOut" }, p.at);
+        tl.fromTo(
+          `#sweep-${p.id}`,
+          { "--shimmer-pos": "-30%" },
+          { "--shimmer-pos": "130%", duration: 0.9, ease: "power2.inOut" },
+          p.at + 0.3,
+        );
+        if (p.lines) {
+          tl.fromTo(p.lines, { opacity: 1 }, { opacity: 0.3, duration: 0.6, ease: "power1.out" }, p.at + 0.4);
+        }
+      });
+      // guides recede as color arrives
+      tl.fromTo("#guides", { opacity: 1 }, { opacity: 0, duration: 1.2, ease: "power1.in" }, 3.2);
+      // lines resolve away; seamless plate takes over
+      tl.fromTo(
+        ["#lines-sole", "#lines-upper", "#lines-laces"],
+        { opacity: 0.3 },
+        { opacity: 0, duration: 0.5, ease: "power1.in", immediateRender: false },
+        6.45,
+      );
+      tl.fromTo("#ghost", { opacity: 0.7 }, { opacity: 0, duration: 0.4, ease: "none", immediateRender: false }, 6.5);
+      tl.fromTo("#full", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "none" }, 6.5);
+      tl.fromTo("#contact-shadow", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power1.out" }, 6.2);
+
+      /* ---------- Beat 3 (7–10s): settle, spotlight, ambient breath ---------- */
+      tl.fromTo("#rig", { scale: 0.96, y: -6 }, { scale: 1, y: 0, duration: 0.9, ease: "power3.out" }, 7.0);
+      tl.fromTo(".spot", { opacity: 0 }, { opacity: 1, duration: 1.0, ease: "sine.out" }, 7.0);
+      tl.fromTo(
+        "#breath",
+        { scale: 1 },
+        { scale: 1.014, duration: 1.0, ease: "sine.inOut", yoyo: true, repeat: 1 },
+        7.9,
+      );
+      tl.fromTo(
+        "#spot-key",
+        { scale: 1 },
+        { scale: 1.04, duration: 1.0, ease: "sine.inOut", yoyo: true, repeat: 1 },
+        7.9,
+      );
+
+      tl.seek(0);
+
+      /* ---------- web player ---------- */
+      const embed = document.querySelector(".sneaker-embed");
+      const stage = document.getElementById("stage");
+
+      // scale the fixed 1920x1080 stage to the embed width
+      const fit = () => gsap.set(stage, { scale: embed.clientWidth / 1920 });
+      fit();
+      new ResizeObserver(fit).observe(embed);
+
+      // wait for every image and the handwriting font, so nothing pops in late
+      const urls = ["sneaker-cutout", "panel-sole", "panel-white", "panel-red", "panel-black", "lines-sole", "lines-upper", "lines-laces"]
+        .map((n) => `assets/${n}.webp`);
+      const loaded = Promise.all([
+        ...urls.map((u) => new Promise((res) => { const i = new Image(); i.onload = i.onerror = res; i.src = u; })),
+        document.fonts.load('700 108px "Caveat"').catch(() => {}),
+      ]);
+
+      const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      loaded.then(() => {
+        if (reduceMotion) { tl.progress(1); return; }   // show the finished hero shot
+        // play once, when at least half of the animation is on screen
+        const io = new IntersectionObserver((entries) => {
+          if (entries.some((e) => e.isIntersecting)) { tl.play(0); io.disconnect(); }
+        }, { threshold: 0.5 });
+        io.observe(embed);
+      });
+    </script>
+  </body>
+</html>
