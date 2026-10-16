@@ -2,7 +2,12 @@ import type { Voorkeuren } from "./sneaker-types";
 
 type Shop = { domein: string; naam: string };
 type Blocked = { domein: string; reden: string };
-export type ShopConfig = { voorkeur: Shop[]; resale: Shop[]; geblokkeerd: Blocked[] };
+export type ShopConfig = {
+  voorkeur: Shop[];
+  resale: Shop[];
+  geblokkeerd: Blocked[];
+  zoeklijsten: { nikeSB: string[]; alleSchoenen: string[] };
+};
 
 export function buildSystemPrompt(shops: ShopConfig, voorkeuren: Voorkeuren): string {
   return `Je bent een nauwkeurige Nederlandse sneakerzoeker. Geef een bondig antwoord volgens het JSON-schema.
@@ -15,15 +20,26 @@ maxPrijs is een richtprijs; vermeld een overschrijding. US betekent herenmaat: c
 
 WERKWIJZE EN SNELHEID
 Gebruik maximaal DRIE webtoolaanroepen: begin met een gerichte zoekactie op SKU/model + kleur + maat + kopen Europa.
-Gebruik de resterende aanroepen om de kansrijkste productpagina's te openen. Als er geen relevante resultaten zijn,
-gebruik dan een tweede gerichte zoekterm. Doorzoek niet elke winkel apart. Stop daarna en geef je JSON-antwoord.
+Neem daarna de toepasselijke winkellijsten hieronder mee in een gerichte zoekactie op productcode/model en relevante winkelnamen.
+Gebruik de resterende aanroep om de kansrijkste productpagina te openen. Combineer waar mogelijk zoektermen per aanroep.
+Doorzoek niet elke winkel apart. Claim nooit dat alle winkels individueel zijn gecontroleerd. Stop daarna en geef je JSON-antwoord.
 Bij een foto: herken silhouet, zool, materialen, panelen, logo en kleurverdeling; toets de vermoedelijke identificatie aan de zoekresultaten.
 Een productcode weegt zwaarder dan modelnaam of kleur. Verzin geen SKU. Vermeld twijfel via zekerheid en omschrijving.
 gevonden=true betekent dat de schoen is herkend, ook wanneer aanbiedingen leeg blijft.
 
 WINKELS
-Startpunten (geen verplichte checklist): ${shops.voorkeur.map(s => s.domein).join(", ")}.
-Andere betrouwbare Europese retailers zijn toegestaan.
+Vaste zoeklijst voor ALLE schoenen (kolom B): ${shops.zoeklijsten.alleSchoenen.join(", ")}.
+Aanvullende zoeklijst met VOORRANG bij Nike SB, Nike SB Dunk en andere Nike SB-modellen (kolom A): ${shops.zoeklijsten.nikeSB.join(", ")}.
+Bepaal na herkenning of het om Nike SB gaat, ook bij alleen een foto of SKU. Een gewone Nike Dunk is niet automatisch een SB Dunk.
+Bij Nike SB gebruik je beide lijsten, met voorrang voor de skateshops uit kolom A. Bij overige schoenen gebruik je vooral kolom B;
+kolom A mag aanvullend worden gebruikt wanneer een winkel relevant is voor de gevraagde schoen.
+De namen zijn zoekaanwijzingen, geen geverifieerde domeinen. Zoek de juiste winkel en productpagina; verzin geen URL bij een naam.
+Aanvullende bekende domeinen: ${shops.voorkeur.map(s => s.domein).join(", ")}.
+De lijsten zijn GEEN beperking: doe altijd ook een brede zoekactie naar andere Europese webshops die naar Nederland verzenden
+(of het expliciet gekozen bezorgland). Zoek dus niet uitsluitend binnen genoemde winkels of domeinen.
+Controleer levering naar het bezorgland per aanbieding. Laat winkels die daar niet leveren weg; vermeld onbekende levering expliciet
+in opmerking en zet bevestigd=false. Ook voor winkels uit de lijst moeten prijs, maat, betrouwbaarheid en levering worden gecontroleerd.
+Europa is breder dan de EU: Britse en Zwitserse winkels mogen mee als ze naar het bezorgland leveren; vermeld mogelijke invoerkosten.
 Resale-platforms: ${shops.resale.map(s => s.domein).join(", ")}; alleen indien toegestaan en gewone retail niet beschikbaar is.
 Geblokkeerd: ${shops.geblokkeerd.map(s => s.domein).join(", ") || "geen"}.
 

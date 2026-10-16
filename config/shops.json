@@ -1,25 +1,180 @@
 {
   "voorkeur": [
-    { "domein": "nike.com", "naam": "Nike" },
-    { "domein": "adidas.nl", "naam": "adidas" },
-    { "domein": "newbalance.nl", "naam": "New Balance" },
-    { "domein": "zalando.nl", "naam": "Zalando" },
-    { "domein": "footlocker.nl", "naam": "Foot Locker" },
-    { "domein": "snipes.com", "naam": "Snipes" },
-    { "domein": "jdsports.nl", "naam": "JD Sports" },
-    { "domein": "sneakerdistrict.nl", "naam": "Sneaker District" },
-    { "domein": "endclothing.com", "naam": "END." },
-    { "domein": "footdistrict.com", "naam": "Footdistrict" },
-    { "domein": "solebox.com", "naam": "Solebox" },
-    { "domein": "titolo.ch", "naam": "Titolo" },
-    { "domein": "43einhalb.com", "naam": "43einhalb" },
-    { "domein": "sneakersnstuff.com", "naam": "Sneakersnstuff" },
-    { "domein": "courir.com", "naam": "Courir" }
+    {
+      "domein": "nike.com",
+      "naam": "Nike"
+    },
+    {
+      "domein": "adidas.nl",
+      "naam": "adidas"
+    },
+    {
+      "domein": "newbalance.nl",
+      "naam": "New Balance"
+    },
+    {
+      "domein": "zalando.nl",
+      "naam": "Zalando"
+    },
+    {
+      "domein": "footlocker.nl",
+      "naam": "Foot Locker"
+    },
+    {
+      "domein": "snipes.com",
+      "naam": "Snipes"
+    },
+    {
+      "domein": "jdsports.nl",
+      "naam": "JD Sports"
+    },
+    {
+      "domein": "sneakerdistrict.nl",
+      "naam": "Sneaker District"
+    },
+    {
+      "domein": "endclothing.com",
+      "naam": "END."
+    },
+    {
+      "domein": "footdistrict.com",
+      "naam": "Footdistrict"
+    },
+    {
+      "domein": "solebox.com",
+      "naam": "Solebox"
+    },
+    {
+      "domein": "titolo.ch",
+      "naam": "Titolo"
+    },
+    {
+      "domein": "43einhalb.com",
+      "naam": "43einhalb"
+    },
+    {
+      "domein": "sneakersnstuff.com",
+      "naam": "Sneakersnstuff"
+    },
+    {
+      "domein": "courir.com",
+      "naam": "Courir"
+    }
   ],
   "resale": [
-    { "domein": "stockx.com", "naam": "StockX" },
-    { "domein": "goat.com", "naam": "GOAT" },
-    { "domein": "restocks.net", "naam": "Restocks" }
+    {
+      "domein": "stockx.com",
+      "naam": "StockX"
+    },
+    {
+      "domein": "goat.com",
+      "naam": "GOAT"
+    },
+    {
+      "domein": "restocks.net",
+      "naam": "Restocks"
+    }
   ],
-  "geblokkeerd": []
+  "geblokkeerd": [],
+  "zoeklijsten": {
+    "nikeSB": [
+      "Skatestore",
+      "sparky",
+      "Ben G",
+      "Skatedeluxe",
+      "Skateshop.be",
+      "Bonkers",
+      "Civilist",
+      "Lobby",
+      "Olliewood",
+      "Titus",
+      "zupport",
+      "wallstreet fr",
+      "insitushop",
+      "Buzzz skateshop",
+      "circle",
+      "Digital skateshop",
+      "wallstreet 8092",
+      "bigairshop",
+      "7hillstore",
+      "Budskateshop",
+      "Amigoskateshop",
+      "slamcityskates",
+      "Pivot skateshop",
+      "al carrer",
+      "acriminalg",
+      "Popname",
+      "Miniramp pl",
+      "Flatspot",
+      "Noteshop",
+      "Route one",
+      "beyondstore fi",
+      "empire leshop",
+      "Skateworld.es",
+      "Vega skateshop",
+      "Riot skatehop",
+      "Zero polis",
+      "tx_sports",
+      "Focus scotland",
+      "Arrowandbeast",
+      "Welcomsk8",
+      "highrollersdublin",
+      "bored of southsea",
+      "Blowout skateshop",
+      "undergroundcore.pl",
+      "soohotrightnow",
+      "cybercafeskateshop",
+      "streetart.fr",
+      "Stil laden",
+      "Sidewalk",
+      "Lockwood-avenue",
+      "Orangejungle"
+    ],
+    "alleSchoenen": [
+      "24Segons",
+      "Afew",
+      "Airness",
+      "Antonio Milano",
+      "Asphalt Gold",
+      "Back-door.it",
+      "Basker4ballers",
+      "Bouncewear",
+      "The Broken Arm",
+      "BSTN",
+      "Double Clutch.it",
+      "Dover Street Market",
+      "End",
+      "Fenom",
+      "Footdistrict",
+      "Footlocker",
+      "Footpatrol",
+      "Footshop",
+      "JDSports",
+      "Kickz",
+      "Kith",
+      "LuisAviaroma",
+      "Maha Amsterdam",
+      "Naked",
+      "Nike",
+      "NoirFonce",
+      "Oneblockdown",
+      "OpiumParis",
+      "Oqium",
+      "Overkill",
+      "Patta",
+      "Sevenstore",
+      "Shinzo",
+      "Size",
+      "Slamjam",
+      "Sneakers76",
+      "Snipes",
+      "SNS",
+      "SOTF",
+      "Solebox",
+      "Starcowparis",
+      "Svd",
+      "TheNextDoor",
+      "Titolo"
+    ]
+  }
 }

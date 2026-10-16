@@ -30,6 +30,15 @@ bevestigen. Dit blijft een AI-beoordeling, geen onafhankelijke winkelvoorraadche
 Oncontroleerbare voorraad wordt als onzeker getoond. Een vaste reactietijd is
 niet gegarandeerd.
 
+De vaste winkellijsten staan in `config/shops.json` onder `zoeklijsten`:
+`nikeSB` bevat kolom A uit de aangeleverde winkellijst (voorrang bij Nike SB en
+SB Dunks); `alleSchoenen` bevat kolom B en wordt bij elke zoekopdracht meegenomen.
+Bij een foto of SKU bepaalt het model na herkenning of de SB-lijst relevant is.
+Daarnaast blijft een brede zoekactie naar Europese webshops met levering naar
+Nederland (of het gekozen bezorgland) verplicht in de prompt. De namen zijn geen
+geverifieerde domeinen of bewijs van levering. Binnen het maximum van drie
+webtoolaanroepen wordt niet iedere winkel afzonderlijk gecontroleerd.
+
 Controleer de koppeling met `node scripts/test-sneaker-search.cjs` (zonder API-kosten).
 Met `node scripts/test-sneaker-search.cjs --live` wordt één echte zoekactie gedaan
 met de lokale sleutel; hiervoor gelden OpenAI API- en webzoekkosten.
