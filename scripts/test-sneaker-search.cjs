@@ -20,7 +20,7 @@ function load(file, fetchImpl) {
     return require(name);
   };
   vm.runInNewContext(output, { module: testModule, exports: testModule.exports, require: localRequire,
-    process, console, fetch: fetchImpl, URL, AbortSignal, Error, Date, Map, Set });
+    process, console, fetch: fetchImpl, URL, AbortSignal, Error, Date, Map, Set, Buffer });
   return testModule.exports;
 }
 

@@ -47,4 +47,5 @@ export type SneakerResultaat = {
   bronnen?: { titel: string; url: string }[];
   waarschuwingen?: string[];
   gecontroleerdOp?: string;
+  fotoToken?: string | null;
 };

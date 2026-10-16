@@ -43,6 +43,16 @@ Controleer de koppeling met `node scripts/test-sneaker-search.cjs` (zonder API-k
 Met `node scripts/test-sneaker-search.cjs --live` wordt één echte zoekactie gedaan
 met de lokale sleutel; hiervoor gelden OpenAI API- en webzoekkosten.
 
+De resultaatkaart kan apart een productfoto laden via `/api/sneaker-photo`.
+Dit gebruikt geen extra OpenAI-aanroep: maximaal twee exacte aanbiedingen worden
+op productmetadata gecontroleerd, met een limiet van vijf seconden voor netwerkverzoeken.
+JSON-LD moet dezelfde SKU bevatten; de fallback naar `og:image` vereist die SKU
+in de pagina-URL of eigen metadata. Zonder passende of laadbare afbeelding blijft
+de foto verborgen. Winkels die automatische toegang blokkeren leveren mogelijk
+geen foto. De foto wordt direct van de winkel geladen en linkt naar de bron.
+De endpoint accepteert alleen tijdelijk ondertekende zoekresultaten, controleert
+publieke DNS-adressen en valideert redirects. Test met `node scripts/test-sneaker-photo.cjs`.
+
 Documentatie: [GPT-6 Luna](https://developers.openai.com/api/docs/models/gpt-6-luna)
 en [webzoeken](https://developers.openai.com/api/docs/guides/tools-web-search).
 

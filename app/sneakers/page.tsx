@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { SneakerResultaat, Voorkeuren } from "@/lib/sneaker-types";
 import styles from "./sneakers.module.css";
+import ProductFoto from "./ProductFoto";
 
 type Foto = { mimeType: string; data: string; preview: string; naam: string };
 
@@ -412,9 +413,17 @@ export default function SneakersPage() {
         {resultaat?.gevonden && s && (
           <section className={styles.resultaat} aria-live="polite">
             <article className={styles.label}>
+              <div className={styles.labelHeading}>
+              <div className={styles.labelText}>
               <p className={styles.labelBrand}>{s.merk ?? "Merk onbekend"}</p>
               <h2 className={styles.labelModel}>{s.model ?? "Model onbekend"}</h2>
               {s.colorway && <p className={styles.labelColorway}>{s.colorway}</p>}
+              </div>
+              {resultaat.fotoToken && (
+                <ProductFoto key={resultaat.fotoToken} token={resultaat.fotoToken}
+                  naam={[s.merk, s.model, s.colorway].filter(Boolean).join(" ")} />
+              )}
+              </div>
               <dl className={styles.specs}>
                 <div>
                   <dt>Style code</dt>

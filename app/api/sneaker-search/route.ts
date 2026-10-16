@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { maakFotoToken } from "@/lib/sneaker-photo";
 import { leesZoekresultaat, sneakerSchema, veiligeUrl, type OpenAIResponse } from "@/lib/sneaker-openai";
 import shopsJson from "@/config/shops.json";
 import { buildSystemPrompt, type ShopConfig } from "@/lib/sneaker-prompt";
@@ -181,6 +182,7 @@ export async function POST(req: NextRequest) {
     const data: SneakerResultaat = {
       ...resultaat,
       aanbiedingen,
+      fotoToken: maakFotoToken(resultaat.sneaker.sku, aanbiedingen.filter(a => a.matchZekerheid === "exact").map(a => a.url)),
       besteMatchToelichting: null, // Server sorteert opnieuw; modeltoelichting kan naar een andere winkel verwijzen.
       bronnen,
       waarschuwingen,
