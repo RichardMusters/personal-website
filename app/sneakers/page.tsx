@@ -393,7 +393,7 @@ export default function SneakersPage() {
               className={styles.zoekAnimatie}
             />
             <p className={styles.statusText}>
-              Sneaker herkennen en winkels doorzoeken. Dit duurt meestal 5 tot 15 seconden.
+              Sneaker herkennen en winkels doorzoeken. We controleren productpagina&apos;s op prijs en jouw maat.
             </p>
           </>
         )}
@@ -549,7 +549,7 @@ export default function SneakersPage() {
         </>
       )}
 
-        <p className={styles.note}>Zoekresultaten worden aangedreven door de Gemini API van Google</p>
+        <p className={styles.note}>Zoekresultaten worden aangedreven door OpenAI</p>
       </div>
     </main>
   );

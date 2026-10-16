@@ -2,6 +2,41 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+### Sneakerszoeker (`/sneakers`)
+
+De server gebruikt de OpenAI Responses API met `gpt-6-luna`, `reasoning.effort: low`,
+foto-invoer, webzoeken en een vast JSON-schema. Stel lokaal in `.env.local` in:
+
+```dotenv
+OPENAI_API_KEY=je_openai_api_sleutel
+OPENAI_MODEL=gpt-6-luna
+RATE_LIMIT_PER_DAY=10
+```
+
+Zet `OPENAI_API_KEY` ook in de environment variables van je hostingomgeving en
+deploy opnieuw. Gebruik nooit een `NEXT_PUBLIC_`-prefix voor de sleutel. `.env.local`
+wordt niet gecommit. De oude Gemini-variabelen zijn niet meer nodig.
+
+Elke zoekactie doet één modelaanroep, met maximaal drie webtoolaanroepen en een
+timeout van 50 seconden. Er is geen automatische herhaling bij lege resultaten.
+Positieve tekstresultaten worden vijf minuten per serverinstance gecachet; foto's
+niet. Cache en daglimiet zijn in-memory en gelden niet over meerdere instances.
+
+Er zijn nog geen productfeeds of voorraad-API's van winkels aangesloten. De
+zoeker gebruikt webbronnen en toont maximaal vijf aanbiedingen. Een aanbieding
+moet een URL hebben die terugkomt in de zoekbronnen; voor bevestigde voorraad
+moet bovendien een productpagina geopend zijn en het model prijs en maat daarop
+bevestigen. Dit blijft een AI-beoordeling, geen onafhankelijke winkelvoorraadcheck.
+Oncontroleerbare voorraad wordt als onzeker getoond. Een vaste reactietijd is
+niet gegarandeerd.
+
+Controleer de koppeling met `node scripts/test-sneaker-search.cjs` (zonder API-kosten).
+Met `node scripts/test-sneaker-search.cjs --live` wordt één echte zoekactie gedaan
+met de lokale sleutel; hiervoor gelden OpenAI API- en webzoekkosten.
+
+Documentatie: [GPT-6 Luna](https://developers.openai.com/api/docs/models/gpt-6-luna)
+en [webzoeken](https://developers.openai.com/api/docs/guides/tools-web-search).
+
 First, run the development server:
 
 ```bash

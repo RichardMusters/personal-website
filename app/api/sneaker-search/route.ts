@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenAI, ThinkingLevel } from "@google/genai";
+import { leesZoekresultaat, sneakerSchema, veiligeUrl, type OpenAIResponse } from "@/lib/sneaker-openai";
 import shopsJson from "@/config/shops.json";
 import { buildSystemPrompt, type ShopConfig } from "@/lib/sneaker-prompt";
 import type { SneakerResultaat, Aanbieding, Voorkeuren } from "@/lib/sneaker-types";
@@ -8,7 +8,7 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 const shops = shopsJson as ShopConfig;
-const MODEL = process.env.GEMINI_MODEL ?? "gemini-3.8-flash";
+const MODEL = process.env.OPENAI_MODEL ?? "gpt-6-luna";
 const LIMIT_PER_DAG = Number(process.env.RATE_LIMIT_PER_DAY ?? 10);
 const MAX_IMAGE_BASE64 = 3_000_000; // ~2,2 MB beeld; de client verkleint al
 const TOEGESTANE_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -22,7 +22,6 @@ const STANDAARD_VOORKEUREN: Voorkeuren = {
   resaleToegestaan: false,
 };
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // --- Eenvoudige rate limit + cache (in-memory, per serverless instance) ---
 const hits = new Map<string, { count: number; reset: number }>();
@@ -51,17 +50,6 @@ function domeinVan(url: string): string {
 function matcht(domein: string, lijst: { domein: string }[]): boolean {
   return lijst.some((s) => domein === s.domein || domein.endsWith("." + s.domein));
 }
-function parseJson(tekst: string): SneakerResultaat | null {
-  const start = tekst.indexOf("{");
-  const eind = tekst.lastIndexOf("}");
-  if (start === -1 || eind === -1) return null;
-  try {
-    return JSON.parse(tekst.slice(start, eind + 1));
-  } catch {
-    return null;
-  }
-}
-
 function rangMatch(m: Aanbieding["matchZekerheid"]): number {
   return m === "exact" ? 0 : m === "waarschijnlijk" ? 1 : 2;
 }
@@ -70,8 +58,8 @@ function rangMaat(m: Aanbieding["maatBeschikbaarheid"]): number {
 }
 
 export async function POST(req: NextRequest) {
-  if (!process.env.GEMINI_API_KEY) {
-    return NextResponse.json({ fout: "GEMINI_API_KEY ontbreekt op de server." }, { status: 500 });
+  if (!process.env.OPENAI_API_KEY) {
+    return NextResponse.json({ fout: "OPENAI_API_KEY ontbreekt op de server." }, { status: 500 });
   }
 
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "onbekend";
@@ -89,6 +77,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ fout: "Ongeldig verzoek." }, { status: 400 });
   }
 
+  if (!body || typeof body !== "object" || (body.query !== undefined && typeof body.query !== "string")) {
+    return NextResponse.json({ fout: "Ongeldig verzoek." }, { status: 400 });
+  }
   const query = (body.query ?? "").trim().slice(0, 300);
   const image = body.image;
   const voorkeuren: Voorkeuren = { ...STANDAARD_VOORKEUREN, ...body.voorkeuren };
@@ -96,7 +87,7 @@ export async function POST(req: NextRequest) {
   if (!query && !image) {
     return NextResponse.json({ fout: "Voer een SKU of omschrijving in, of upload een foto." }, { status: 400 });
   }
-  if (image && (!TOEGESTANE_TYPES.includes(image.mimeType) || image.data.length > MAX_IMAGE_BASE64)) {
+  if (image && (!TOEGESTANE_TYPES.includes(image.mimeType) || typeof image.data !== "string" || !image.data || image.data.length > MAX_IMAGE_BASE64 || !/^[A-Za-z0-9+/]+={0,2}$/.test(image.data))) {
     return NextResponse.json({ fout: "Foto moet JPG, PNG of WebP zijn en kleiner dan 2 MB." }, { status: 400 });
   }
 
@@ -107,84 +98,71 @@ export async function POST(req: NextRequest) {
     if (c && c.verloopt > Date.now()) return NextResponse.json(c.data);
   }
 
-  const parts: ({ text: string } | { inlineData: { mimeType: string; data: string } })[] = [];
-  if (image) parts.push({ inlineData: { mimeType: image.mimeType, data: image.data } });
-  parts.push({
-    text: query
-      ? `Zoekopdracht van de bezoeker: ${query}`
-      : "Identificeer de sneaker op deze foto en zoek waar hij te koop is.",
-  });
-
-  async function voerZoekUit() {
-    const response = await ai.models.generateContent({
-      model: MODEL,
-      contents: [{ role: "user", parts }],
-      config: {
-        systemInstruction: buildSystemPrompt(shops, voorkeuren),
-        tools: [{ googleSearch: {} }],
-        temperature: 0.2,
-        maxOutputTokens: 4096,
-        // LOW voor snelheid. Een hoger denkniveau (MEDIUM/HIGH) bleek 45-90+ seconden te kunnen kosten bij
-        // een lastig te vinden schoen — te traag en te onvoorspelbaar. Een lege eerste poging vangen we
-        // hieronder op met één snelle herhaling in plaats van met een trager denkniveau.
-        thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
-      },
-    });
-    const resultaat = parseJson(response.text ?? "");
-    return resultaat ? { resultaat, response } : null;
-  }
+  const content: ({ type: "input_text"; text: string } | { type: "input_image"; image_url: string; detail: "auto" })[] = [
+    { type: "input_text", text: query ? "Zoekopdracht van de bezoeker: " + query : "Identificeer deze sneaker en zoek aanbiedingen." },
+  ];
+  if (image) content.push({ type: "input_image", image_url: "data:" + image.mimeType + ";base64," + image.data, detail: "auto" });
 
   try {
-    const begin = Date.now();
-    let poging = await voerZoekUit();
+    const response = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: { Authorization: "Bearer " + process.env.OPENAI_API_KEY, "Content-Type": "application/json" },
+      signal: AbortSignal.any([req.signal, AbortSignal.timeout(50_000)]),
+      cache: "no-store",
+      body: JSON.stringify({
+        model: MODEL,
+        store: false,
+        reasoning: { effort: "low" },
+        instructions: buildSystemPrompt(shops, voorkeuren),
+        input: [{ role: "user", content }],
+        tools: [{ type: "web_search" }],
+        tool_choice: "required",
+        max_tool_calls: 3,
+        include: ["web_search_call.action.sources"],
+        max_output_tokens: 5000,
+        text: { format: { type: "json_schema", name: "sneaker_resultaat", strict: true, schema: sneakerSchema } },
+      }),
+    });
+    if (!response.ok) {
+      console.error("OpenAI zoekdienst HTTP-status:", response.status);
+      const status = response.status === 429 ? 429 : 502;
+      return NextResponse.json({ fout: status === 429
+        ? "De limiet van de zoekdienst is bereikt. Probeer het later opnieuw."
+        : "De zoekdienst is tijdelijk niet beschikbaar. Controleer de OpenAI-configuratie op de server." }, { status });
+    }
+    const poging = leesZoekresultaat(await response.json() as OpenAIResponse);
     if (!poging) {
-      return NextResponse.json({ fout: "Het zoekresultaat kon niet worden gelezen. Probeer het opnieuw." }, { status: 502 });
+      return NextResponse.json({ fout: "Het zoekresultaat was onvolledig. Probeer het opnieuw." }, { status: 502 });
     }
-
-    const isLeeg = (p: NonNullable<typeof poging>) => !p.resultaat.gevonden || (p.resultaat.aanbiedingen ?? []).length === 0;
-    // Alleen herhalen als de eerste poging snel leeg terugkwam — bij een al trage, lastig te vinden
-    // schoen zou een tweede volledige zoekpoging het serverless-tijdslimiet (60s) kunnen overschrijden.
-    if (isLeeg(poging) && Date.now() - begin < 25_000) {
-      try {
-        const herhaling = await voerZoekUit();
-        if (herhaling) poging = herhaling;
-      } catch {
-        /* herhaling mislukt — ga door met de eerste (lege) uitkomst */
-      }
-    }
-
-    const { resultaat, response } = poging;
-
-    // Bronnen die Gemini echt via Google Search heeft gebruikt.
-    // De uri is vaak een Google-redirect; de title bevat meestal het domein.
-    const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks ?? [];
-    const bronnen = chunks
-      .filter((c) => c.web?.uri)
-      .map((c) => ({ titel: c.web?.title ?? "", url: c.web?.uri ?? "" }));
-    const bronDomeinen = new Set(
-      bronnen.flatMap((b) => [b.titel.replace(/^www\./, "").toLowerCase(), domeinVan(b.url)]).filter(Boolean)
-    );
+    const { resultaat, bronnen, geopend } = poging;
+    const bronUrls = new Set(bronnen.map((b) => b.url));
 
     // Hard filter: geblokkeerde domeinen en (indien niet toegestaan) resale eruit, voorkeur markeren, bron controleren
     const waarschuwingen: string[] = [];
     const aanbiedingen: Aanbieding[] = (resultaat.aanbiedingen ?? [])
       .map((a) => {
-        const domein = domeinVan(a.url);
+        const url = veiligeUrl(a.url);
+        const domein = url ? domeinVan(url) : "";
+        const bronGeverifieerd = !!url && bronUrls.has(url);
+        const bevestigd = !!url && geopend.has(url) && a.bevestigd === true && a.prijs != null;
+        const maatBeschikbaarheid = a.maatBeschikbaarheid === "beschikbaar" && !bevestigd ? "onzeker" as const : a.maatBeschikbaarheid;
         return {
           ...a,
           domein,
+          bevestigd,
+          maatBeschikbaarheid,
           voorkeur: matcht(domein, shops.voorkeur),
-          bronGeverifieerd: [...bronDomeinen].some((d) => d === domein || d.endsWith("." + domein) || domein.endsWith("." + d)),
-          bevestigdWeergave: a.bevestigd === true && a.maatBeschikbaarheid === "beschikbaar" && a.matchZekerheid === "exact",
+          bronGeverifieerd,
+          bevestigdWeergave: bevestigd && maatBeschikbaarheid === "beschikbaar" && a.matchZekerheid === "exact",
         };
       })
       .filter((a) => {
-        if (!a.domein) return false;
+        if (!a.domein || !a.bronGeverifieerd || a.maatBeschikbaarheid === "uitverkocht" || a.matchZekerheid === "andere_uitvoering") return false;
         if (matcht(a.domein, shops.geblokkeerd)) {
           waarschuwingen.push(`${a.domein} is weggelaten omdat deze winkel op de waarschuwingslijst staat.`);
           return false;
         }
-        if (!voorkeuren.resaleToegestaan && a.type === "resale") {
+        if (!voorkeuren.resaleToegestaan && (a.type === "resale" || matcht(a.domein, shops.resale))) {
           waarschuwingen.push(`${a.winkel} (resale) is weggelaten — resale staat uit in je voorkeuren.`);
           return false;
         }
@@ -195,15 +173,15 @@ export async function POST(req: NextRequest) {
         if (matchVerschil !== 0) return matchVerschil;
         const maatVerschil = rangMaat(x.maatBeschikbaarheid) - rangMaat(y.maatBeschikbaarheid);
         if (maatVerschil !== 0) return maatVerschil;
-        if (x.voorkeur !== y.voorkeur) return x.voorkeur ? -1 : 1;
         const prijsX = x.totaalprijs ?? x.prijs ?? Infinity;
         const prijsY = y.totaalprijs ?? y.prijs ?? Infinity;
-        return prijsX - prijsY;
-      });
+        return prijsX - prijsY || Number(y.voorkeur) - Number(x.voorkeur);
+      }).slice(0, 5);
 
     const data: SneakerResultaat = {
       ...resultaat,
       aanbiedingen,
+      besteMatchToelichting: null, // Server sorteert opnieuw; modeltoelichting kan naar een andere winkel verwijzen.
       bronnen,
       waarschuwingen,
       gecontroleerdOp: new Date().toISOString(),
@@ -211,19 +189,15 @@ export async function POST(req: NextRequest) {
     // Geen lege/negatieve resultaten cachen — anders blokkeert één mislukte zoekpoging alle volgende
     // pogingen voor hetzelfde zoekterm, terwijl voorraad juist snel kan veranderen.
     if (cacheKey && data.gevonden && data.aanbiedingen.length > 0) {
-      cache.set(cacheKey, { data, verloopt: Date.now() + 30 * 60 * 1000 });
+      cache.set(cacheKey, { data, verloopt: Date.now() + 5 * 60 * 1000 });
     }
 
     return NextResponse.json(data);
   } catch (err: unknown) {
-    console.error("Gemini-fout:", err);
-    const status = (err as { status?: number })?.status;
-    if (status === 429) {
-      return NextResponse.json(
-        { fout: "De gratis limiet van de zoekdienst is voor nu bereikt. Probeer het later opnieuw." },
-        { status: 429 }
-      );
+    if (err instanceof Error && ["TimeoutError", "AbortError"].includes(err.name)) {
+      return NextResponse.json({ fout: "Het zoeken duurde te lang. Probeer een exacte productcode." }, { status: 504 });
     }
+    console.error("OpenAI zoekdienst mislukt:", err instanceof Error ? err.name : "UnknownError");
     return NextResponse.json({ fout: "Zoeken mislukt. Probeer het opnieuw." }, { status: 500 });
   }
 }
