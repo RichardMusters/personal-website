@@ -20,7 +20,7 @@ function load(file, fetchImpl) {
     return require(name);
   };
   vm.runInNewContext(output, { module: testModule, exports: testModule.exports, require: localRequire,
-    process, console, fetch: fetchImpl, URL, AbortSignal, Error, Date, Map, Set, Buffer });
+    process, console, fetch: fetchImpl, URL, AbortSignal, Error, Date, Map, Set, Buffer, Response });
   return testModule.exports;
 }
 
@@ -31,13 +31,25 @@ async function main() {
     const route = load('app/api/sneaker-search/route.ts', fetch);
     const begin = Date.now();
     const response = await route.POST(new Request('http://localhost/api/sneaker-search', {
-      method: 'POST', body: JSON.stringify({ query: 'Nike Air Force 1 CW2288-111 maat 45' }),
+      method: 'POST', body: JSON.stringify({ query: process.argv.find(arg => arg.startsWith('--query='))?.slice(8) || 'Nike Air Force 1 CW2288-111 maat 45' }),
     }));
     const data = await response.json();
     console.log(JSON.stringify({ status: response.status, seconds: (Date.now()-begin)/1000,
       model: data.sneaker?.model, offers: data.aanbiedingen?.length,
       confirmed: data.aanbiedingen?.filter(a => a.bevestigdWeergave).length, error: data.fout }));
     assert.equal(response.status, 200, 'Live search failed');
+    if (process.argv.includes('--photo')) {
+      assert.ok(data.fotoToken, 'Search did not produce a photo token');
+      const photoRoute = load('app/api/sneaker-photo/route.ts', fetch);
+      const photoResponse = await photoRoute.GET(new Request(`http://localhost/api/sneaker-photo?token=${encodeURIComponent(data.fotoToken)}`));
+      const { foto } = await photoResponse.json();
+      assert.ok(foto?.url, 'No photo found from actual search sources');
+      const image = await fetch(foto.url, { signal: AbortSignal.timeout(8000) });
+      console.log(JSON.stringify({ photo: foto.url, source: foto.bron, imageStatus: image.status, imageType: image.headers.get('content-type') }));
+      assert.equal(image.status, 200);
+      assert.match(image.headers.get('content-type'), /^image\//);
+      await image.body?.cancel();
+    }
     return;
   }
   process.env.OPENAI_API_KEY = 'test-only';
@@ -46,7 +58,7 @@ async function main() {
   const offer = { winkel: 'Nike', url, prijs: 120, valuta: 'EUR', verzendkosten: 'gratis',
     totaalprijs: 120, verzendingBuitenEU: false, type: 'nieuw', maatBeschikbaarheid: 'beschikbaar',
     matchZekerheid: 'exact', bevestigd: true, opmerking: null };
-  const result = { gevonden: true, zekerheid: 'hoog', sneaker: { model: 'Air Force 1' },
+  const result = { gevonden: true, zekerheid: 'hoog', sneaker: { model: 'Air Force 1', sku: 'CW2288-111' },
     aanbiedingen: [offer], alternatieven: [], tips: [], besteMatchToelichting: null };
   let providerStatus = 200;
   let outputStatus = 'completed';
@@ -91,7 +103,8 @@ async function main() {
   assert.equal(data.aanbiedingen.length, 1);
   result.aanbiedingen = [];
   const beforeEmpty = calls;
-  await request({ query: 'empty' });
+  const emptyData = await (await request({ query: 'empty' })).json();
+  assert.ok(emptyData.fotoToken, 'A recognized shoe without offers must still have a photo token from its sources');
   assert.equal(calls, beforeEmpty + 1, 'Empty searches must not retry');
   outputStatus = 'incomplete';
   assert.equal((await request({ query: 'incomplete' })).status, 502);

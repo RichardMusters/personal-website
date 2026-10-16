@@ -4,12 +4,21 @@ import { isIP } from "node:net";
 import { request } from "node:https";
 
 type PhotoRequest = { sku: string; urls: string[]; expires: number };
+const MAX_PHOTO_SOURCES = 4;
+
+export function kiesFotoBronnen(sku: string | null, exactUrls: string[], bronUrls: string[]): string[] {
+  const code = sku ? normaliseer(sku) : "";
+  const metSku = code ? bronUrls.filter(url => normaliseer(url).includes(code)) : [];
+  return [...new Set([...exactUrls, ...metSku, ...bronUrls])]
+    .filter(url => url.length <= 1800 && veiligeHttps(url))
+    .slice(0, MAX_PHOTO_SOURCES);
+}
 
 // Only URLs supplied by our search endpoint may be fetched by the photo endpoint.
 export function maakFotoToken(sku: string | null, urls: string[]): string | null {
   const key = process.env.OPENAI_API_KEY;
   if (!key || !sku || !urls.length) return null;
-  const payload = Buffer.from(JSON.stringify({ sku, urls: urls.slice(0, 2), expires: Date.now() + 15 * 60_000 })).toString("base64url");
+  const payload = Buffer.from(JSON.stringify({ sku, urls: urls.slice(0, MAX_PHOTO_SOURCES), expires: Date.now() + 15 * 60_000 })).toString("base64url");
   return `${payload}.${createHmac("sha256", key).update(payload).digest("base64url")}`;
 }
 
@@ -23,7 +32,7 @@ export function leesFotoToken(token: string): PhotoRequest | null {
   if (actual.length !== expected.length || !timingSafeEqual(actual, expected)) return null;
   try {
     const data = JSON.parse(Buffer.from(payload, "base64url").toString()) as PhotoRequest;
-    return typeof data.sku === "string" && Array.isArray(data.urls) && data.urls.length <= 2 &&
+    return typeof data.sku === "string" && Array.isArray(data.urls) && data.urls.length <= MAX_PHOTO_SOURCES &&
       data.urls.every(url => typeof url === "string") && data.expires > Date.now() ? data : null;
   } catch { return null; }
 }
@@ -39,6 +48,8 @@ export function publiekeIPv4(ip: string): boolean {
 
 function veiligeHttps(value: string, base?: string): URL | null {
   try {
+    // "https:files/photo.jpg" is broken shop metadata, not a valid absolute URL.
+    if (/^[a-z][a-z\d+.-]*:/i.test(value) && !/^https:\/\//i.test(value)) return null;
     const url = new URL(value, base);
     return url.protocol === "https:" && !url.username && !url.password &&
       (!url.port || url.port === "443") && !isIP(url.hostname) && url.hostname.includes(".") ? url : null;
@@ -109,7 +120,9 @@ export function vindProductFoto(html: string, pageUrl: string, sku: string): str
     if (!value || typeof value !== "object") return null;
     const item = value as Record<string, unknown>;
     const types = Array.isArray(item["@type"]) ? item["@type"] : [item["@type"]];
-    if (types.includes("Product") && [item.sku, item.mpn, item.productID].some(id => typeof id === "string" && normaliseer(id) === code)) {
+    const matchId = [item.sku, item.mpn, item.productID].some(id => typeof id === "string" && normaliseer(id) === code);
+    const matchUrl = typeof item.url === "string" && normaliseer(item.url).includes(code);
+    if (types.includes("Product") && (matchId || matchUrl)) {
       const image = imageUrl(item.image);
       if (image) return image;
     }
@@ -128,11 +141,22 @@ export function vindProductFoto(html: string, pageUrl: string, sku: string): str
   }
   // OG images are only eligible when the page URL or its own metadata identifies this SKU.
   const identity = [pageUrl, meta.get("og:title"), meta.get("og:description"), meta.get("product:retailer_item_id")];
-  return identity.some(v => v && normaliseer(v).includes(code))
-    ? imageUrl(meta.get("og:image") ?? meta.get("twitter:image")) : null;
+  if (identity.some(v => v && normaliseer(v).includes(code))) {
+    const image = imageUrl(meta.get("og:image:secure_url")) ?? imageUrl(meta.get("og:image")) ?? imageUrl(meta.get("twitter:image"));
+    if (image) return image;
+  }
+  // Some Shopify themes publish broken OG links but valid, lazy-loaded product images.
+  // Require the exact style code in the image filename, not merely elsewhere on the page.
+  for (const tag of html.matchAll(/<img\b[^>]*>/gi)) {
+    for (const attr of tag[0].matchAll(/(?:\s)(?:src|data-src)\s*=\s*(?:"([^"]*)"|'([^']*)')/gi)) {
+      const image = imageUrl(attr[1] ?? attr[2]);
+      if (image && normaliseer(new URL(image).pathname.split("/").pop() ?? "").includes(code)) return image;
+    }
+  }
+  return null;
 }
 
-export async function zoekProductFoto(sku: string, urls: string[], signal: AbortSignal) {
+export async function zoekProductFotos(sku: string, urls: string[], signal: AbortSignal) {
   const candidates = await Promise.all(urls.map(async source => {
     try {
       const url = veiligeHttps(source);
@@ -144,5 +168,6 @@ export async function zoekProductFoto(sku: string, urls: string[], signal: Abort
       return { url: image, bron: page.url };
     } catch { return null; }
   }));
-  return candidates.find(Boolean) ?? null;
+  return candidates.filter((foto): foto is { url: string; bron: string } => foto !== null)
+    .filter((foto, index, all) => all.findIndex(other => other.url === foto.url) === index);
 }

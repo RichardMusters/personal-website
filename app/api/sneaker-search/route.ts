@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { maakFotoToken } from "@/lib/sneaker-photo";
+import { kiesFotoBronnen, maakFotoToken } from "@/lib/sneaker-photo";
 import { leesZoekresultaat, sneakerSchema, veiligeUrl, type OpenAIResponse } from "@/lib/sneaker-openai";
 import shopsJson from "@/config/shops.json";
 import { buildSystemPrompt, type ShopConfig } from "@/lib/sneaker-prompt";
@@ -182,7 +182,12 @@ export async function POST(req: NextRequest) {
     const data: SneakerResultaat = {
       ...resultaat,
       aanbiedingen,
-      fotoToken: maakFotoToken(resultaat.sneaker.sku, aanbiedingen.filter(a => a.matchZekerheid === "exact").map(a => a.url)),
+      // Een identificatiebron kan een foto hebben, ook zonder bestelbare aanbieding.
+      fotoToken: maakFotoToken(resultaat.sneaker.sku, kiesFotoBronnen(
+        resultaat.sneaker.sku,
+        (resultaat.aanbiedingen ?? []).filter(a => a.matchZekerheid === "exact" && bronUrls.has(veiligeUrl(a.url) ?? "") && !matcht(domeinVan(a.url), shops.geblokkeerd)).map(a => a.url),
+        bronnen.filter(b => !matcht(domeinVan(b.url), shops.geblokkeerd)).map(b => b.url),
+      )),
       besteMatchToelichting: null, // Server sorteert opnieuw; modeltoelichting kan naar een andere winkel verwijzen.
       bronnen,
       waarschuwingen,

@@ -44,14 +44,21 @@ Met `node scripts/test-sneaker-search.cjs --live` wordt één echte zoekactie ge
 met de lokale sleutel; hiervoor gelden OpenAI API- en webzoekkosten.
 
 De resultaatkaart kan apart een productfoto laden via `/api/sneaker-photo`.
-Dit gebruikt geen extra OpenAI-aanroep: maximaal twee exacte aanbiedingen worden
-op productmetadata gecontroleerd, met een limiet van vijf seconden voor netwerkverzoeken.
-JSON-LD moet dezelfde SKU bevatten; de fallback naar `og:image` vereist die SKU
+Dit gebruikt geen extra OpenAI-aanroep: maximaal vier bronnen uit de zoekactie worden
+op productmetadata gecontroleerd, ook wanneer er geen aanbiedingen of geen bestelbare
+maten zijn. Er geldt een limiet van vijf seconden voor netwerkverzoeken.
+JSON-LD moet dezelfde SKU in het product-ID of de product-URL bevatten; de fallback naar `og:image` vereist die SKU
 in de pagina-URL of eigen metadata. Zonder passende of laadbare afbeelding blijft
-de foto verborgen. Winkels die automatische toegang blokkeren leveren mogelijk
+de foto verborgen. Ook `og:image:secure_url` en lazy-loaded productafbeeldingen met
+de SKU in de bestandsnaam worden herkend; ongeldige metadata-URLs worden genegeerd.
+Bij een laadfout probeert de browser de volgende gevonden bron. Winkels die automatische toegang blokkeren leveren mogelijk
 geen foto. De foto wordt direct van de winkel geladen en linkt naar de bron.
 De endpoint accepteert alleen tijdelijk ondertekende zoekresultaten, controleert
 publieke DNS-adressen en valideert redirects. Test met `node scripts/test-sneaker-photo.cjs`.
+Met `node scripts/test-sneaker-search.cjs --live --photo --query=IM5204-001`
+test je de volledige zoek- en fotoketen (één betaalde zoekactie, foto zonder AI).
+`node scripts/test-sneaker-photo-live.cjs` controleert echte productpagina's en
+hun afbeeldingslinks zonder OpenAI-aanroepen en schrijft diagnose-HTML onder `.next/photo-debug`.
 
 Documentatie: [GPT-6 Luna](https://developers.openai.com/api/docs/models/gpt-6-luna)
 en [webzoeken](https://developers.openai.com/api/docs/guides/tools-web-search).
