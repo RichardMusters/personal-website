@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { SneakerResultaat, Voorkeuren } from "@/lib/sneaker-types";
+import type { SneakerResultaat, SneakerSuggestie, Voorkeuren } from "@/lib/sneaker-types";
 import styles from "./sneakers.module.css";
 import ProductFoto from "./ProductFoto";
 
@@ -58,6 +58,10 @@ export default function SneakersPage() {
   const [resultaat, setResultaat] = useState<SneakerResultaat | null>(null);
   const [voorkeuren, setVoorkeuren] = useState<Voorkeuren>(STANDAARD_VOORKEUREN);
   const [weergave, setWeergave] = useState<"zoek" | "resultaat">("zoek");
+  const [suggesties, setSuggesties] = useState<SneakerSuggestie[]>([]);
+  const [suggestiesOpen, setSuggestiesOpen] = useState(false);
+  const [actieveSuggestie, setActieveSuggestie] = useState(-1);
+  const sugOverslaanRef = useRef(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
@@ -74,6 +78,61 @@ export default function SneakersPage() {
       /* negeren, standaardvoorkeuren blijven gelden */
     }
   }, []);
+
+  // Autocomplete via pckt.sh (StockX-catalogus), met debounce zodat we niet bij elke toetsaanslag een call doen.
+  useEffect(() => {
+    if (sugOverslaanRef.current) {
+      sugOverslaanRef.current = false;
+      return;
+    }
+    const q = query.trim();
+    if (q.length < 2) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- lijst leegmaken bij te korte invoer
+      setSuggesties([]);
+      return;
+    }
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/sneaker-suggesties?q=${encodeURIComponent(q)}`, { signal: controller.signal });
+        const data = await res.json();
+        setSuggesties(data.suggesties ?? []);
+        setActieveSuggestie(-1);
+      } catch {
+        /* afgebroken of geen verbinding — suggesties zijn optioneel */
+      }
+    }, 250);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [query]);
+
+  function kiesSuggestie(sug: SneakerSuggestie) {
+    sugOverslaanRef.current = true;
+    setQuery(sug.sku ? `${sug.titel} ${sug.sku}` : sug.titel);
+    setSuggesties([]);
+    setSuggestiesOpen(false);
+    setActieveSuggestie(-1);
+  }
+
+  function suggestieToets(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (!suggestiesOpen || suggesties.length === 0) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActieveSuggestie((i) => (i + 1) % suggesties.length);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActieveSuggestie((i) => (i <= 0 ? suggesties.length - 1 : i - 1));
+    } else if (e.key === "Enter" && actieveSuggestie >= 0) {
+      e.preventDefault();
+      kiesSuggestie(suggesties[actieveSuggestie]);
+    } else if (e.key === "Escape") {
+      setSuggestiesOpen(false);
+    }
+  }
+
+  const toonSuggesties = suggestiesOpen && suggesties.length > 0;
 
   function wijzigVoorkeur<K extends keyof Voorkeuren>(key: K, value: Voorkeuren[K]) {
     setVoorkeuren((prev) => {
@@ -258,6 +317,7 @@ export default function SneakersPage() {
           className={styles.searchField}
           onSubmit={(e) => {
             e.preventDefault();
+            setSuggestiesOpen(false);
             if (!laden) zoek();
           }}
         >
@@ -283,7 +343,19 @@ export default function SneakersPage() {
             id="sneaker-query"
             type="search"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setSuggestiesOpen(true);
+            }}
+            onFocus={() => setSuggestiesOpen(true)}
+            onBlur={() => setSuggestiesOpen(false)}
+            onKeyDown={suggestieToets}
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded={toonSuggesties}
+            aria-controls="sneaker-suggesties"
+            aria-activedescendant={toonSuggesties && actieveSuggestie >= 0 ? `sneaker-sug-${actieveSuggestie}` : undefined}
+            autoComplete="off"
             placeholder="Bijv. DD1391-100 of 'Jordan 4 Retro Military Black'"
             className={styles.searchInput}
             maxLength={300}
@@ -291,6 +363,38 @@ export default function SneakersPage() {
           <button type="submit" className={styles.searchButton} disabled={laden}>
             {laden ? "Zoeken…" : "Zoeken"}
           </button>
+          {toonSuggesties && (
+            <ul id="sneaker-suggesties" role="listbox" className={styles.suggesties}>
+              {suggesties.map((sug, i) => (
+                <li
+                  key={sug.id}
+                  id={`sneaker-sug-${i}`}
+                  role="option"
+                  aria-selected={i === actieveSuggestie}
+                  className={i === actieveSuggestie ? `${styles.suggestie} ${styles.suggestieActief}` : styles.suggestie}
+                  // mousedown i.p.v. click: anders sluit de blur van het invoerveld de lijst eerst
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    kiesSuggestie(sug);
+                  }}
+                  onMouseEnter={() => setActieveSuggestie(i)}
+                >
+                  {sug.afbeelding ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={sug.afbeelding} alt="" className={styles.suggestieFoto} loading="lazy" />
+                  ) : (
+                    <span className={styles.suggestieFoto} aria-hidden />
+                  )}
+                  <span className={styles.suggestieTekst}>
+                    <span className={styles.suggestieTitel}>{sug.titel}</span>
+                    {(sug.merk || sug.sku) && (
+                      <span className={styles.suggestieMeta}>{[sug.merk, sug.sku].filter(Boolean).join(" · ")}</span>
+                    )}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
         </form>
 
         <div className={styles.divider}>

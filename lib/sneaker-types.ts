@@ -49,3 +49,11 @@ export type SneakerResultaat = {
   gecontroleerdOp?: string;
   fotoToken?: string | null;
 };
+
+export type SneakerSuggestie = {
+  id: string;
+  titel: string;
+  merk: string | null;
+  sku: string | null;
+  afbeelding: string | null;
+};

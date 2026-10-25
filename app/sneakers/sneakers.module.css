@@ -184,6 +184,7 @@
 }
 
 .searchField {
+  position: relative;
   margin-top: clamp(32px, 5vw, 48px);
   display: flex;
   align-items: center;
@@ -244,6 +245,66 @@
 .searchButton:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.suggesties {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  max-height: min(420px, 60vh);
+  overflow-y: auto;
+  border: 1px solid var(--ink-600);
+  border-radius: var(--radius-button);
+  background: var(--ink-900);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+}
+
+.suggestie {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.suggestieActief {
+  background: var(--ink-700);
+}
+
+.suggestieFoto {
+  flex-shrink: 0;
+  width: 56px;
+  height: 40px;
+  border-radius: 6px;
+  background: #fff;
+  object-fit: contain;
+}
+
+.suggestieTekst {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.suggestieTitel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-inter-tight), system-ui, sans-serif;
+  font-size: 15px;
+  color: var(--ink-50);
+}
+
+.suggestieMeta {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  color: var(--ink-400);
 }
 
 .divider {
