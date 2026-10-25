@@ -9,7 +9,9 @@ export type ShopConfig = {
   zoeklijsten: { nikeSB: string[]; alleSchoenen: string[] };
 };
 
-export function buildSystemPrompt(shops: ShopConfig, voorkeuren: Voorkeuren): string {
+// maxAanroepen: live zoeken is snel (weinig aanroepen), geplande checks mogen grondiger (meer pagina's openen).
+export function buildSystemPrompt(shops: ShopConfig, voorkeuren: Voorkeuren, maxAanroepen = 5): string {
+  const openen = Math.max(1, maxAanroepen - 2);
   return `Je bent een nauwkeurige Nederlandse sneakerzoeker. Geef een bondig antwoord volgens het JSON-schema.
 
 VOORKEUREN
@@ -19,9 +21,13 @@ Resale mag uitsluitend wanneer resaleToegestaan=true. Nieuw, Europese retail en 
 maxPrijs is een richtprijs; vermeld een overschrijding. US betekent herenmaat: controleer de maatomrekening bij het betreffende merk.
 
 WERKWIJZE EN SNELHEID
-Gebruik maximaal DRIE webtoolaanroepen: begin met een gerichte zoekactie op SKU/model + kleur + maat + kopen Europa.
+Gebruik maximaal ${maxAanroepen} webtoolaanroepen: begin met een gerichte zoekactie op SKU/model + kleur + maat + kopen Europa.
 Neem daarna de toepasselijke winkellijsten hieronder mee in een gerichte zoekactie op productcode/model en relevante winkelnamen.
-Gebruik de resterende aanroep om de kansrijkste productpagina te openen. Combineer waar mogelijk zoektermen per aanroep.
+Gebruik de resterende aanroepen (maximaal ${openen}) om productpagina's te OPENEN, elk van een andere winkel, de kansrijkste eerst:
+alleen een geopende pagina kan een aanbieding bevestigen. Open er minimaal ${Math.min(3, openen)} (als er zoveel winkels met de
+exacte schoen in de resultaten staan) voordat je antwoordt. Combineer waar mogelijk zoektermen per aanroep.
+Gebruik bij merk- en winkelwebshops met landversies de Nederlandse versie (bijv. nike.com/nl, adidas.nl) of die van het
+gekozen bezorgland; andere landversies (zoals nike.com/de) leveren meestal niet naar Nederland.
 Doorzoek niet elke winkel apart. Claim nooit dat alle winkels individueel zijn gecontroleerd. Stop daarna en geef je JSON-antwoord.
 Bij een foto: herken silhouet, zool, materialen, panelen, logo en kleurverdeling; toets de vermoedelijke identificatie aan de zoekresultaten.
 Een productcode weegt zwaarder dan modelnaam of kleur. Verzin geen SKU. Vermeld twijfel via zekerheid en omschrijving.

@@ -42,7 +42,8 @@ export async function POST(req: Request) {
     return Response.json({ overgeslagen: true });
   }
 
-  const uitkomst = await zoekSneaker({ query: plan.query, voorkeuren: plan.voorkeuren });
+  // Geen gebruiker die wacht: grondiger zoeken, zodat meer winkelpagina's gecontroleerd worden.
+  const uitkomst = await zoekSneaker({ query: plan.query, voorkeuren: plan.voorkeuren, maxAanroepen: 8 });
   const data = uitkomst.ok ? uitkomst.data : null;
   const bevestigd = data?.aanbiedingen.filter((a) => a.bevestigdWeergave) ?? [];
 

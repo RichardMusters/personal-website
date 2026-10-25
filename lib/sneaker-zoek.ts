@@ -43,11 +43,14 @@ export async function zoekSneaker({
   image,
   voorkeuren,
   signal,
+  maxAanroepen = 5,
 }: {
   query: string;
   image?: { mimeType: string; data: string };
   voorkeuren: Voorkeuren;
   signal?: AbortSignal;
+  /** Meer webaanroepen = meer productpagina's openen (trager, duurder). */
+  maxAanroepen?: number;
 }): Promise<ZoekUitkomst> {
   const content: ({ type: "input_text"; text: string } | { type: "input_image"; image_url: string; detail: "auto" })[] = [
     { type: "input_text", text: query ? "Zoekopdracht van de bezoeker: " + query : "Identificeer deze sneaker en zoek aanbiedingen." },
@@ -64,11 +67,11 @@ export async function zoekSneaker({
         model: MODEL,
         store: false,
         reasoning: { effort: "low" },
-        instructions: buildSystemPrompt(shops, voorkeuren),
+        instructions: buildSystemPrompt(shops, voorkeuren, maxAanroepen),
         input: [{ role: "user", content }],
         tools: [{ type: "web_search" }],
         tool_choice: "required",
-        max_tool_calls: 3,
+        max_tool_calls: maxAanroepen,
         include: ["web_search_call.action.sources"],
         max_output_tokens: 5000,
         text: { format: { type: "json_schema", name: "sneaker_resultaat", strict: true, schema: sneakerSchema } },
