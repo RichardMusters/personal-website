@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { SneakerResultaat, SneakerSuggestie, Voorkeuren } from "@/lib/sneaker-types";
 import styles from "./sneakers.module.css";
 import ProductFoto from "./ProductFoto";
+import PlanPaneel from "./PlanPaneel";
 
 type Foto = { mimeType: string; data: string; preview: string; naam: string };
 
@@ -483,6 +484,10 @@ export default function SneakersPage() {
             </button>
           </div>
         )}
+
+        <div className={styles.planWrap}>
+          <PlanPaneel query={query} voorkeuren={voorkeuren} />
+        </div>
         </>
       )}
 
@@ -654,6 +659,10 @@ export default function SneakersPage() {
                 </ul>
               </details>
             )}
+
+            <div className={styles.blok}>
+              <PlanPaneel query={s.sku ?? query} voorkeuren={voorkeuren} />
+            </div>
 
             <p className={styles.disclaimer}>
               Prijzen en voorraad kunnen afwijken. Controleer altijd de winkel zelf.

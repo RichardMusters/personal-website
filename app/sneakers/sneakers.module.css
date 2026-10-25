@@ -811,3 +811,109 @@
   padding-top: 20px;
   width: 100%;
 }
+
+/* --- Later opnieuw zoeken (geplande zoekacties) --- */
+.planWrap {
+  margin-top: clamp(24px, 4vw, 32px);
+}
+
+.planCode {
+  margin-top: 16px;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.planZoekt {
+  margin: 16px 0 0;
+  font-family: var(--font-inter-tight), system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--ink-200);
+}
+
+.planZoekt strong {
+  color: var(--ink-50);
+}
+
+.planTijden {
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.planTijden li {
+  padding: 4px 10px;
+  border: 1px solid var(--ink-600);
+  border-radius: 999px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  color: var(--ink-200);
+}
+
+.planKnop {
+  margin-top: 14px;
+  height: 40px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 10px;
+  background: var(--brand-500);
+  color: var(--ink-950);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.planKnop:hover {
+  background: var(--brand-400);
+}
+
+.planKnop:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.planLijst {
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.planItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--ink-700);
+  border-radius: 12px;
+  background: var(--ink-850);
+}
+
+.planItemKop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-family: var(--font-inter-tight), system-ui, sans-serif;
+  font-size: 15px;
+  overflow-wrap: anywhere;
+}
+
+.planLink {
+  font-family: var(--font-inter-tight), system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--brand-400);
+}
+
+.planActies {
+  margin-top: 4px;
+}

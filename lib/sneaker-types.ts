@@ -57,3 +57,22 @@ export type SneakerSuggestie = {
   sku: string | null;
   afbeelding: string | null;
 };
+
+export type PlanRun = {
+  gepland: string; // ISO
+  uitgevoerd: string; // ISO
+  status: "gevonden" | "niet_gevonden" | "fout";
+  samenvatting: string;
+  aanbiedingen: { winkel: string; url: string; prijs: number | null; valuta: string; bevestigd: boolean }[];
+};
+
+export type GeplandeZoekactie = {
+  id: string;
+  query: string;
+  voorkeuren: Voorkeuren;
+  aangemaakt: string; // ISO
+  tijdstippen: string[]; // ISO, oplopend
+  messageIds: string[];
+  status: "actief" | "gevonden" | "afgerond" | "geannuleerd";
+  runs: PlanRun[];
+};
