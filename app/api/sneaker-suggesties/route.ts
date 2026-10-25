@@ -32,10 +32,18 @@ export async function GET(req: Request) {
   if (gecached && gecached.verloopt > Date.now()) return Response.json({ suggesties: gecached.data });
 
   try {
-    const res = await fetch(`${PCKT_URL}?${new URLSearchParams({ query, page: "1" })}`, {
-      headers: { Authorization: `Bearer ${sleutel}`, "Content-Type": "application/json" },
-      signal: AbortSignal.any([req.signal, AbortSignal.timeout(5000)]),
-    });
+    const signal = AbortSignal.any([req.signal, AbortSignal.timeout(8000)]);
+    const haalOp = () =>
+      fetch(`${PCKT_URL}?${new URLSearchParams({ query, page: "1" })}`, {
+        headers: { Authorization: `Bearer ${sleutel}`, "Content-Type": "application/json" },
+        signal,
+      });
+    let res = await haalOp();
+    // pckt staat (op het gratis plan) 1 request per seconde toe en antwoordt anders met 426/429 — één keer opnieuw proberen.
+    if (res.status === 426 || res.status === 429) {
+      await new Promise((r) => setTimeout(r, 1100));
+      res = await haalOp();
+    }
     if (!res.ok) {
       console.error("pckt suggesties mislukt:", res.status, await res.text().catch(() => ""));
       return Response.json({ suggesties: [] }, { status: 502 });

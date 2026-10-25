@@ -95,13 +95,15 @@ export default function SneakersPage() {
     const timer = setTimeout(async () => {
       try {
         const res = await fetch(`/api/sneaker-suggesties?q=${encodeURIComponent(q)}`, { signal: controller.signal });
+        // Bij een fout (bijv. rate limit) de vorige suggesties laten staan i.p.v. de lijst leeg te maken.
+        if (!res.ok) return;
         const data = await res.json();
         setSuggesties(data.suggesties ?? []);
         setActieveSuggestie(-1);
       } catch {
         /* afgebroken of geen verbinding — suggesties zijn optioneel */
       }
-    }, 250);
+    }, 400);
     return () => {
       clearTimeout(timer);
       controller.abort();
