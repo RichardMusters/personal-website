@@ -62,20 +62,22 @@ async function publiekAdres(url: URL) {
   return addresses[0].address;
 }
 
-async function haalPagina(url: URL, signal: AbortSignal, redirects = 0): Promise<{ html: string; url: string }> {
+async function haalPagina(url: URL, signal: AbortSignal, redirects = 0, soort: "html" | "json" = "html"): Promise<{ html: string; url: string }> {
   const address = await publiekAdres(url);
   signal.throwIfAborted();
   // Pin the validated DNS address so a second lookup cannot redirect to a private network.
   const response = await new Promise<{ status: number; location?: string; html: string }>((resolve, reject) => {
-    const req = request(url, { signal, family: 4, headers: { Accept: "text/html", "User-Agent": "SneakerPhoto/1.0" },
+    const req = request(url, { signal, family: 4, headers: { Accept: soort === "json" ? "application/json, text/javascript" : "text/html", "User-Agent": "SneakerPhoto/1.0" },
       lookup: (_hostname, _options, callback) => callback(null, address, 4),
     }, res => {
       const status = res.statusCode ?? 500;
       if (status >= 300 && status < 400) {
         res.resume(); resolve({ status, location: res.headers.location, html: "" }); return;
       }
-      if (status !== 200 || !res.headers["content-type"]?.includes("text/html")) {
-        res.resume(); reject(new Error("No HTML")); return;
+      // Shopify serveert <product>.js als text/javascript met JSON-inhoud.
+      const type = res.headers["content-type"] ?? "";
+      if (status !== 200 || !(soort === "json" ? /json|javascript/.test(type) : type.includes("text/html"))) {
+        res.resume(); reject(new Error(soort === "json" ? "No JSON" : "No HTML")); return;
       }
       const chunks: Buffer[] = [];
       let size = 0;
@@ -93,9 +95,16 @@ async function haalPagina(url: URL, signal: AbortSignal, redirects = 0): Promise
   if (response.location) {
     const next = veiligeHttps(response.location, url.href);
     if (!next || redirects >= 2) throw new Error("Invalid redirect");
-    return haalPagina(next, signal, redirects + 1);
+    return haalPagina(next, signal, redirects + 1, soort);
   }
   return { html: response.html, url: url.href };
+}
+
+// Zelfde bescherming (alleen publieke hosts, vastgepind DNS-adres, max. redirects en grootte) voor JSON-endpoints.
+export async function haalVeiligeJson(bron: string, signal: AbortSignal): Promise<unknown> {
+  const url = veiligeHttps(bron);
+  if (!url) throw new Error("Ongeldige URL");
+  return JSON.parse((await haalPagina(url, signal, 0, "json")).html);
 }
 
 const normaliseer = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, "");

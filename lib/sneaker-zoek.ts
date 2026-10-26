@@ -1,4 +1,5 @@
 import { kiesFotoBronnen, maakFotoToken } from "@/lib/sneaker-photo";
+import { controleerShopify } from "@/lib/sneaker-shopify";
 import { leesZoekresultaat, sneakerSchema, veiligeUrl, type OpenAIResponse } from "@/lib/sneaker-openai";
 import shopsJson from "@/config/shops.json";
 import { buildSystemPrompt, type ShopConfig } from "@/lib/sneaker-prompt";
@@ -36,6 +37,82 @@ function rangMatch(m: Aanbieding["matchZekerheid"]): number {
 }
 function rangMaat(m: Aanbieding["maatBeschikbaarheid"]): number {
   return m === "beschikbaar" ? 0 : m === "onzeker" ? 1 : 2;
+}
+
+const MAX_SHOPIFY_CHECKS = 8;
+
+// Past aanbiedingen in place aan op basis van Shopify-voorraaddata. Niet-Shopify-winkels blijven ongewijzigd.
+async function controleerViaShopify(aanbiedingen: Aanbieding[], sku: string | null, voorkeuren: Voorkeuren, signal?: AbortSignal) {
+  const teControleren = aanbiedingen
+    .filter((a) => a.domein && a.bronGeverifieerd && a.matchZekerheid !== "andere_uitvoering" && !matcht(a.domein, shops.geblokkeerd))
+    .slice(0, MAX_SHOPIFY_CHECKS);
+  const timeout = signal ? AbortSignal.any([signal, AbortSignal.timeout(6000)]) : AbortSignal.timeout(6000);
+
+  await Promise.all(teControleren.map(async (a) => {
+    const controle = await controleerShopify(a.url, sku, voorkeuren, timeout);
+    if (!controle || controle.status === "onbekend") return;
+    const maat = `${voorkeuren.maatSysteem} ${voorkeuren.maat}`;
+
+    if (controle.status === "uitverkocht") {
+      a.maatBeschikbaarheid = "uitverkocht"; // valt daarna uit de selectie
+      a.bevestigdWeergave = false;
+      return;
+    }
+
+    a.prijs ??= controle.prijs;
+    if (a.totaalprijs == null && a.prijs != null) {
+      a.totaalprijs = a.verzendkosten === "gratis" ? a.prijs : typeof a.verzendkosten === "number" ? a.prijs + a.verzendkosten : null;
+    }
+    a.maatBeschikbaarheid = "beschikbaar";
+    // SKU is in de winkeldata teruggevonden → exact dezelfde schoen.
+    if (sku) a.matchZekerheid = "exact";
+    a.bevestigd = a.prijs != null;
+    a.bevestigdWeergave = a.bevestigd && a.matchZekerheid === "exact";
+    a.opmerking = [`Maat ${maat} op voorraad volgens de winkeldata.`, a.opmerking].filter(Boolean).join(" ");
+  }));
+}
+
+const MAX_BRON_CHECKS = 6;
+
+// Shopify-productpagina's die wel in de zoekresultaten staan maar die het model niet als aanbieding gaf
+// (meestal omdat het de voorraad niet kon controleren). Alleen bij voorraad in de gevraagde maat + gevonden SKU toevoegen.
+async function shopifyUitBronnen(bronnen: { url: string }[], bestaand: Aanbieding[], sku: string | null, voorkeuren: Voorkeuren, signal?: AbortSignal): Promise<Aanbieding[]> {
+  if (!sku) return [];
+  const bekendeDomeinen = new Set(bestaand.map((a) => a.domein));
+  const perDomein = new Map<string, string>();
+  for (const { url } of bronnen) {
+    const domein = domeinVan(url);
+    if (!domein || !/\/products\//.test(url) || bekendeDomeinen.has(domein) || perDomein.has(domein)) continue;
+    if (matcht(domein, shops.geblokkeerd) || (!voorkeuren.resaleToegestaan && matcht(domein, shops.resale))) continue;
+    perDomein.set(domein, url);
+  }
+  const timeout = signal ? AbortSignal.any([signal, AbortSignal.timeout(6000)]) : AbortSignal.timeout(6000);
+  const maat = `${voorkeuren.maatSysteem} ${voorkeuren.maat}`;
+
+  const resultaten = await Promise.all([...perDomein].slice(0, MAX_BRON_CHECKS).map(async ([domein, url]): Promise<Aanbieding | null> => {
+    const controle = await controleerShopify(url, sku, voorkeuren, timeout);
+    if (controle?.status !== "beschikbaar") return null;
+    const bekend = [...shops.voorkeur, ...shops.resale].find((s) => domein === s.domein || domein.endsWith("." + s.domein));
+    return {
+      winkel: bekend?.naam ?? domein,
+      url,
+      prijs: controle.prijs,
+      valuta: "EUR",
+      verzendkosten: null,
+      totaalprijs: null,
+      verzendingBuitenEU: false,
+      type: "nieuw",
+      maatBeschikbaarheid: "beschikbaar",
+      matchZekerheid: "exact",
+      bevestigd: controle.prijs != null,
+      opmerking: `Maat ${maat} op voorraad volgens de winkeldata. Verzending naar ${voorkeuren.bezorgland} niet gecontroleerd.`,
+      domein,
+      voorkeur: matcht(domein, shops.voorkeur),
+      bronGeverifieerd: true,
+      bevestigdWeergave: controle.prijs != null,
+    };
+  }));
+  return resultaten.filter((a): a is Aanbieding => a !== null);
 }
 
 export async function zoekSneaker({
@@ -97,7 +174,7 @@ export async function zoekSneaker({
 
     // Hard filter: geblokkeerde domeinen en (indien niet toegestaan) resale eruit, voorkeur markeren, bron controleren
     const waarschuwingen: string[] = [];
-    const aanbiedingen: Aanbieding[] = (resultaat.aanbiedingen ?? [])
+    const kandidaten: Aanbieding[] = (resultaat.aanbiedingen ?? [])
       .map((a) => {
         const url = veiligeUrl(a.url);
         const domein = url ? domeinVan(url) : "";
@@ -113,7 +190,17 @@ export async function zoekSneaker({
           bronGeverifieerd,
           bevestigdWeergave: bevestigd && maatBeschikbaarheid === "beschikbaar" && a.matchZekerheid === "exact",
         };
-      })
+      });
+
+    // Extra check: bij Shopify-winkels de voorraad van de gevraagde maat zelf uitlezen (bevestigt of schrapt aanbiedingen).
+    // Tegelijk: Shopify-winkels uit de zoekresultaten die het model niet als aanbieding noemde.
+    const [, extra] = await Promise.all([
+      controleerViaShopify(kandidaten, resultaat.sneaker.sku, voorkeuren, signal),
+      shopifyUitBronnen(bronnen, kandidaten, resultaat.sneaker.sku, voorkeuren, signal),
+    ]);
+    kandidaten.push(...extra);
+
+    const aanbiedingen = kandidaten
       .filter((a) => {
         if (!a.domein || !a.bronGeverifieerd || a.maatBeschikbaarheid === "uitverkocht" || a.matchZekerheid === "andere_uitvoering") return false;
         if (matcht(a.domein, shops.geblokkeerd)) {
