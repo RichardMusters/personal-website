@@ -1,12 +1,13 @@
 import Image from "next/image";
+import Link from "next/link";
 import styles from "./Editorial.module.css";
 import { editorialStyles, navLink } from "./tokens";
 import type { SkyColophon } from "./sky/useSkyState";
 
-export function EdNav() {
+export function EdNav({ current }: { current?: "home" | "werkervaring" } = {}) {
   return (
     <div className={styles.nav}>
-      <div className={styles.navBrand}>
+      <Link href="/" className={styles.navBrand} style={navLink} aria-label="Naar de homepage">
         <span style={{
           width: 28, height: 28, borderRadius: "50%",
           background: "var(--mint-deep)",
@@ -14,12 +15,12 @@ export function EdNav() {
           color: "var(--bg-sand)", fontSize: 11, fontWeight: 600, letterSpacing: 0.5,
         }}>RM</span>
         <span style={{ fontSize: 14, fontWeight: 500, letterSpacing: -0.1 }}>Richard Musters</span>
-      </div>
+      </Link>
 
       <nav className={styles.navLinks}>
-        <a style={navLink} href="#about">Over</a>
-        <a style={navLink} href="#work">Werk</a>
-        <a style={navLink} href="#projects">Projecten</a>
+        <Link style={navLink} href="/#about">Over</Link>
+        <Link style={navLink} href="/werkervaring" aria-current={current === "werkervaring" ? "page" : undefined}>Werkervaring</Link>
+        <Link style={navLink} href="/#projects">Projecten</Link>
         <a style={navLink} href="#contact">Contact</a>
       </nav>
 
@@ -232,6 +233,9 @@ export function EdAbout() {
             over tech of auto&apos;s en ik ben happy. Ik woon samen met mijn vrouw in Rotterdam, de
             mooiste rot stad die er is, niet onderhandelbaar.
           </p>
+          <Link href="/werkervaring" className={styles.inlineLink} style={editorialStyles.mono}>
+            Bekijk mijn werkervaring &rarr;
+          </Link>
 
 
 
@@ -455,7 +459,7 @@ export function EdNumbers() {
   );
 }
 
-export function EdContact() {
+export function EdContact({ number = "07" }: { number?: string } = {}) {
   return (
     <section id="contact" className={styles.contactSection}>
       <div className={styles.contactAmpersand} style={editorialStyles.serif}>&amp;</div>
@@ -472,7 +476,7 @@ export function EdContact() {
         >
           - Contact
         </span>
-        <span style={{ ...editorialStyles.mono, fontSize: 11, color: "var(--ink-3)" }}>07</span>
+        <span style={{ ...editorialStyles.mono, fontSize: 11, color: "var(--ink-3)" }}>{number}</span>
       </div>
 
       <h2 className={styles.contactTitle} style={editorialStyles.serif}>

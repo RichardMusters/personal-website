@@ -39,6 +39,32 @@
   flex: 0 0 auto;
 }
 
+.navLinks a[aria-current="page"] {
+  color: var(--mint-deep);
+  text-decoration: underline !important;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 1px !important;
+}
+
+.inlineLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 28px;
+  font-size: 12px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--mint-deep);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 4px;
+}
+
+.inlineLink:hover,
+.inlineLink:focus-visible {
+  color: var(--accent);
+}
+
 .heroSection,
 .aboutSection,
 .contactSection {

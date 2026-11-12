@@ -1,7 +1,7 @@
 // app/components/editorial/Editorial.tsx
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import styles from "./Editorial.module.css";
 import { lightTokens, darkTokens, editorialStyles } from "./tokens";
 import RotterdamSkyline from "./RotterdamSkyline";
@@ -9,6 +9,7 @@ import Erasmusbrug from "./Erasmusbrug";
 import { SkyCelestial, SkyPrecipitation } from "./sky/SkyOverlay";
 import { useSkyState } from "./sky/useSkyState";
 import type { HeaderData } from "./sky/types";
+import type { SkyColophon } from "./sky/useSkyState";
 import {
   EdNav, EdHero, EdStrip, EdAbout, EdAiDev, EdProjects, EdNumbers, EdContact, DarkToggle,
 } from "./Sections";
@@ -16,7 +17,11 @@ import {
 const WEATHER_REFRESH_MS = 15 * 60_000;
 const CLOCK_TICK_MS = 60_000;
 
-export default function Editorial() {
+/**
+ * Gedeelde pagina-omlijsting: dark-mode, skyline/brug-achtergrond en de
+ * weer/water-data. `children` krijgt de colofon-data mee voor de hero.
+ */
+export function EditorialShell({ children }: { children: (colophon: SkyColophon) => ReactNode }) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [progress, setProgress] = useState(0);
   const [dark, setDark] = useState(false);
@@ -112,14 +117,26 @@ export default function Editorial() {
         </div>
       </div>
 
-      <EdNav />
-      <EdHero colophon={sky.colophon} />
-      <EdStrip />
-      <EdAbout />
-      <EdAiDev />
-      <EdProjects />
-      <EdNumbers />
-      <EdContact />
+      {children(sky.colophon)}
     </div>
+  );
+}
+
+export default function Editorial() {
+  return (
+    <EditorialShell>
+      {(colophon) => (
+        <>
+          <EdNav />
+          <EdHero colophon={colophon} />
+          <EdStrip />
+          <EdAbout />
+          <EdAiDev />
+          <EdProjects />
+          <EdNumbers />
+          <EdContact />
+        </>
+      )}
+    </EditorialShell>
   );
 }

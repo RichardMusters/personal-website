@@ -1,0 +1,283 @@
+/* Aanvullende stijlen voor /werkervaring — bouwt voort op Editorial.module.css */
+
+.heroTitle {
+  font-size: clamp(3rem, 9vw, 5.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  margin: 0 0 28px;
+  color: var(--ink);
+}
+
+/* --- "In het kort"-kaart --------------------------------------------- */
+
+.facts {
+  margin: 0;
+  display: grid;
+  gap: 0;
+}
+
+.factRow {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.6fr) 1fr;
+  gap: 16px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+  align-items: baseline;
+}
+
+.factRow dt {
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.factRow dd {
+  margin: 0;
+  font-size: clamp(1.05rem, 2.4vw, 1.25rem);
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+/* --- Tijdlijn -------------------------------------------------------- */
+
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+
+.role {
+  display: grid;
+  grid-template-columns: minmax(140px, 0.35fr) minmax(0, 1fr);
+  gap: clamp(20px, 5vw, 64px);
+  padding: clamp(28px, 4vw, 40px) 0;
+  border-bottom: 1px solid var(--line);
+  position: relative;
+}
+
+.rolePeriod {
+  font-size: 12px;
+  letter-spacing: 0.4px;
+  color: var(--mint-deep);
+  padding-top: 8px;
+}
+
+.roleBody {
+  max-width: 68ch;
+}
+
+.roleTitle {
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
+  line-height: 1.1;
+  margin: 0 0 12px;
+  color: var(--ink);
+}
+
+.roleCompany {
+  font-style: italic;
+  color: var(--ink-3);
+  font-size: 0.7em;
+}
+
+.roleSummary {
+  margin: 0;
+  font-size: clamp(1rem, 2.1vw, 1.0625rem);
+  line-height: 1.7;
+  color: var(--ink-2);
+}
+
+.highlights {
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+
+.highlights li {
+  position: relative;
+  padding-left: 22px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+.highlights li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+  width: 10px;
+  height: 1px;
+  background: var(--accent);
+}
+
+.roleCompact {
+  padding: 22px 0;
+}
+
+.roleCompact .rolePeriod {
+  color: var(--ink-3);
+  padding-top: 4px;
+}
+
+.roleCompact .roleTitle {
+  font-size: clamp(1.15rem, 2.6vw, 1.35rem);
+  margin-bottom: 6px;
+}
+
+.roleCompact .roleSummary {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 20px;
+}
+
+.tag {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--mint-tint);
+  color: var(--mint-deep);
+}
+
+/* --- Uitgelicht ------------------------------------------------------ */
+
+.featuredGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.featuredContext {
+  font-size: 11px;
+  color: var(--ink-3);
+  letter-spacing: 0.3px;
+}
+
+.par {
+  margin: 4px 0 0;
+}
+
+.par dt {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+  margin-top: 14px;
+}
+
+.par dd {
+  margin: 4px 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+/* --- Skills ---------------------------------------------------------- */
+
+.coreList {
+  list-style: none;
+  padding: 0;
+  margin: 32px 0 0;
+  display: grid;
+  gap: 8px;
+  font-size: 0.9375rem;
+  color: var(--ink-2);
+}
+
+.coreList li::before {
+  content: "◆ ";
+  color: var(--mint-deep);
+  font-size: 0.7em;
+  vertical-align: 0.15em;
+}
+
+.skillGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px clamp(24px, 4vw, 48px);
+}
+
+.skillGroup {
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+
+.skillGroup ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  color: var(--ink-2);
+}
+
+/* --- Opleidingen ----------------------------------------------------- */
+
+.education {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+
+.education li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.educationTitle {
+  font-size: clamp(1.15rem, 2.6vw, 1.4rem);
+  color: var(--ink);
+}
+
+.educationOrg {
+  font-size: 11px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* --- Responsive ------------------------------------------------------ */
+
+@media (max-width: 1024px) {
+  .featuredGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .role {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .rolePeriod {
+    padding-top: 0;
+  }
+
+  .featuredGrid,
+  .skillGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .factRow {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
