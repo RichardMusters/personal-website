@@ -38,7 +38,6 @@ export const intro = {
 export const facts = [
   { label: "Nu", value: "IT-Manager · Harmony Service Center" },
   { label: "Bij Harmony sinds", value: "2012" },
-  { label: "Eerste eigen zaak", value: "LMComputers · 2004" },
   { label: "Standplaats", value: "Rotterdam" },
 ];
 
