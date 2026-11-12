@@ -7,7 +7,10 @@ import { EdNav, EdContact } from "../components/editorial/Sections";
 import { editorialStyles } from "../components/editorial/tokens";
 import type { SkyColophon } from "../components/editorial/sky/useSkyState";
 import styles from "./werkervaring.module.css";
-import { intro, facts, roles, featured, skills, coreSkills, education } from "./data";
+import {
+  headings, intro, facts, roles, featuredLabels, featured, skillsIntro, coreSkillsTitle,
+  coreSkills, skills, educationIntro, education, contactIntro,
+} from "./data";
 
 const label: CSSProperties = {
   ...editorialStyles.mono,
@@ -65,11 +68,19 @@ function Hero({ colophon }: { colophon: SkyColophon }) {
             {intro.eyebrow}
           </div>
           <h1 className={styles.heroTitle} style={editorialStyles.serif}>
-            Van monteur
+            {headings.hero.title}
             <br />
-            <em style={{ ...accent, fontVariationSettings: '"opsz" 144, "SOFT" 100' }}>tot IT-manager.</em>
+            <em style={{ ...accent, fontVariationSettings: '"opsz" 144, "SOFT" 100' }}>{headings.hero.accent}</em>
           </h1>
-          <p className={ed.heroIntro} style={{ maxWidth: "46ch" }}>{intro.lead}</p>
+          {intro.paragraphs.map((p, i) => (
+            <p
+              key={i}
+              className={ed.heroIntro}
+              style={{ maxWidth: "52ch", marginBottom: i === intro.paragraphs.length - 1 ? 0 : 16 }}
+            >
+              {p}
+            </p>
+          ))}
         </div>
 
         <div className={ed.quoteCard}>
@@ -91,11 +102,11 @@ function Hero({ colophon }: { colophon: SkyColophon }) {
 function Timeline() {
   return (
     <section id="loopbaan" className={ed.aboutSection}>
-      <SectionHeader title="Loopbaan" number="01" />
+      <SectionHeader title={headings.loopbaan.label} number="01" />
       <Heading style={{ marginBottom: 48 }}>
-        Wat ik heb
+        {headings.loopbaan.title}
         <br />
-        <em style={accent}>neergezet.</em>
+        <em style={accent}>{headings.loopbaan.accent}</em>
       </Heading>
 
       <ol className={styles.timeline}>
@@ -131,11 +142,11 @@ function Timeline() {
 function Featured() {
   return (
     <section className={ed.projectsSection}>
-      <SectionHeader title="Uitgelicht" number="02" />
+      <SectionHeader title={headings.featured.label} number="02" />
       <Heading style={{ marginBottom: 40 }}>
-        Werk waar ik
+        {headings.featured.title}
         <br />
-        <em style={accent}>trots op ben.</em>
+        <em style={accent}>{headings.featured.accent}</em>
       </Heading>
 
       <div className={styles.featuredGrid}>
@@ -144,11 +155,11 @@ function Featured() {
             <span className={styles.featuredContext} style={editorialStyles.mono}>{p.context}</span>
             <h3 className={ed.projectTitle} style={{ ...editorialStyles.serif, marginTop: 10 }}>{p.title}</h3>
             <dl className={styles.par}>
-              <dt style={editorialStyles.mono}>Probleem</dt>
+              <dt style={editorialStyles.mono}>{featuredLabels.problem}</dt>
               <dd>{p.problem}</dd>
-              <dt style={editorialStyles.mono}>Aanpak</dt>
+              <dt style={editorialStyles.mono}>{featuredLabels.approach}</dt>
               <dd>{p.approach}</dd>
-              <dt style={editorialStyles.mono}>Resultaat</dt>
+              <dt style={editorialStyles.mono}>{featuredLabels.result}</dt>
               <dd>{p.result}</dd>
             </dl>
             <div className={styles.tags}>
@@ -171,14 +182,16 @@ function Featured() {
 function Skills() {
   return (
     <section className={ed.aboutSection}>
-      <SectionHeader title="Gereedschapskist" number="03" />
+      <SectionHeader title={headings.skills.label} number="03" />
       <div className={ed.aboutGrid}>
         <div>
           <Heading>
-            Waar ik
+            {headings.skills.title}
             <br />
-            <em style={accent}>mee werk.</em>
+            <em style={accent}>{headings.skills.accent}</em>
           </Heading>
+          <p className={styles.sectionIntro}>{skillsIntro}</p>
+          <h3 style={{ ...label, color: "var(--mint-deep)", margin: "32px 0 0" }}>{coreSkillsTitle}</h3>
           <ul className={styles.coreList}>
             {coreSkills.map((c) => <li key={c}>{c}</li>)}
           </ul>
@@ -202,7 +215,15 @@ function Skills() {
 function Education() {
   return (
     <section className={ed.aboutSection}>
-      <SectionHeader title="Opleidingen" number="04" />
+      <SectionHeader title={headings.education.label} number="04" />
+      <div className={ed.aboutGrid} style={{ marginBottom: 40 }}>
+        <Heading>
+          {headings.education.title}
+          <br />
+          <em style={accent}>{headings.education.accent}</em>
+        </Heading>
+        <p className={styles.sectionIntro} style={{ marginTop: 0, alignSelf: "end" }}>{educationIntro}</p>
+      </div>
       <ul className={styles.education}>
         {education.map((e) => (
           <li key={e.title}>
@@ -226,7 +247,7 @@ export default function Werkervaring() {
           <Featured />
           <Skills />
           <Education />
-          <EdContact number="05" />
+          <EdContact number="05" intro={contactIntro} />
         </>
       )}
     </EditorialShell>

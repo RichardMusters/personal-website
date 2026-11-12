@@ -184,10 +184,18 @@
 
 /* --- Skills ---------------------------------------------------------- */
 
+.sectionIntro {
+  margin: 24px 0 0;
+  font-size: clamp(1rem, 2.1vw, 1.0625rem);
+  line-height: 1.7;
+  color: var(--ink-2);
+  max-width: 52ch;
+}
+
 .coreList {
   list-style: none;
   padding: 0;
-  margin: 32px 0 0;
+  margin: 14px 0 0;
   display: grid;
   gap: 8px;
   font-size: 0.9375rem;

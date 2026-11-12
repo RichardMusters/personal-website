@@ -459,7 +459,7 @@ export function EdNumbers() {
   );
 }
 
-export function EdContact({ number = "07" }: { number?: string } = {}) {
+export function EdContact({ number = "07", intro }: { number?: string; intro?: string[] } = {}) {
   return (
     <section id="contact" className={styles.contactSection}>
       <div className={styles.contactAmpersand} style={editorialStyles.serif}>&amp;</div>
@@ -485,10 +485,18 @@ export function EdContact({ number = "07" }: { number?: string } = {}) {
         <em style={{ fontStyle: "italic", color: "var(--mint-deep)" }}>begint hier.</em>
       </h2>
 
-      <p className={styles.contactIntro}>
-        Open voor gesprekken over IT, AI, Fabric Nederlandse verzekeringssector.
-        Of over Alfa Romeo, de beste BBQ-recepten, of gewoon een goed glas whiskey. Stuur een mailtje, of vind me op LinkedIn of Instagram.
-      </p>
+      {intro ? (
+        <div className={styles.contactIntro}>
+          {intro.map((p, i) => (
+            <p key={i} style={{ margin: i === intro.length - 1 ? 0 : "0 0 16px" }}>{p}</p>
+          ))}
+        </div>
+      ) : (
+        <p className={styles.contactIntro}>
+          Open voor gesprekken over IT, AI, Fabric Nederlandse verzekeringssector.
+          Of over Alfa Romeo, de beste BBQ-recepten, of gewoon een goed glas whiskey. Stuur een mailtje, of vind me op LinkedIn of Instagram.
+        </p>
+      )}
 
       <div className={styles.contactActions}>
         <a
